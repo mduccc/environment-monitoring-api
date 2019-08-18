@@ -75,7 +75,7 @@ module.exports = class Datas {
                             let id = ids[i]
                             let data = datas[i]
                             //console.log('City data =>', data)
-                            console.log('City data =>', data)
+                            //console.log('City data =>', data)
                             cityData.push({
                                 city_id: data.city_id,
                                 city_name: await this.getCityName(data.city_id),
