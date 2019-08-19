@@ -22,6 +22,7 @@ module.exports = class Datas {
                     if (city_id === id) {
                         //console.log('City name =>', data.city_name)
                         result = data.city_name
+                        break
                     }
                 }
             })
@@ -34,7 +35,7 @@ module.exports = class Datas {
         return result
     }
 
-    async getCityData(city_ID, token, callback) {
+    async getCityData(city_id, token, callback) {
         let result = null
         let cityData = []
         let code = this.httpStatus.unauthorized_code
@@ -55,11 +56,12 @@ module.exports = class Datas {
                             //console.log('City data =>', data)
                             if (data.city_id === isTruth.city_id) {
                                 console.log('City data =>', data)
-                                cityData = {
+                                cityData.push({
                                     city_id: data.city_id,
                                     city_name: await this.getCityName(data.city_id),
                                     times: data.times
-                                }
+                                })
+                                break
                             }
                         }
                     })
@@ -71,17 +73,38 @@ module.exports = class Datas {
                     .then(async snapshot => {
                         let ids = await snapshot.docs.map(doc => doc.id)
                         let datas = await snapshot.docs.map(doc => doc.data())
-                        for (let i = 0; i < datas.length; i++) {
-                            let id = ids[i]
-                            let data = datas[i]
-                            //console.log('City data =>', data)
-                            //console.log('City data =>', data)
-                            cityData.push({
-                                city_id: data.city_id,
-                                city_name: await this.getCityName(data.city_id),
-                                times: data.times
-                            })
-
+                        if (city_id == null) {
+                            for (let i = 0; i < datas.length; i++) {
+                                let id = ids[i]
+                                let data = datas[i]
+                                //console.log('City data =>', data)
+                                //console.log('City data =>', data)
+                                cityData.push({
+                                    city_id: data.city_id,
+                                    city_name: await this.getCityName(data.city_id),
+                                    times: data.times
+                                })
+                            }
+                        } else {
+                            if (await this.getCityName(city_id) !== false) {
+                                for (let i = 0; i < datas.length; i++) {
+                                    let id = ids[i]
+                                    let data = datas[i]
+                                    //console.log('City data =>', data)
+                                    //console.log('City data =>', data)
+                                    if (data.city_id === city_id) {
+                                        cityData.push({
+                                            city_id: data.city_id,
+                                            city_name: await this.getCityName(data.city_id),
+                                            times: data.times
+                                        })
+                                        break
+                                    }
+                                }
+                            } else {
+                                code = this.httpStatus.not_found_code,
+                                message = this.httpStatus.not_found_message
+                            }
                         }
                     })
                     .catch(err => {
