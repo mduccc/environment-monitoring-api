@@ -34,7 +34,7 @@ module.exports = class Router {
             let Datas = new datas()
             let city_id = req.query.city_id
             let token = req.query.token
-            await Datas.getCityData(city_id, token, async data => {
+            await Datas.getCitiesData(city_id, token, async data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)

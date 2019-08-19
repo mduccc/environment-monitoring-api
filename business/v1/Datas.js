@@ -35,7 +35,7 @@ module.exports = class Datas {
         return result
     }
 
-    async getCityData(city_id, token, callback) {
+    async getCitiesData(city_id, token, callback) {
         let result = null
         let cityData = []
         let code = this.httpStatus.unauthorized_code
@@ -126,10 +126,6 @@ module.exports = class Datas {
             }
 
         callback(result)
-    }
-
-    async getCitiesData(token, callback) {
-
     }
 
 }
