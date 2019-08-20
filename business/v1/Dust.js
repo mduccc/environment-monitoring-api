@@ -62,7 +62,7 @@ module.exports = class Dust {
                                 })
                             }
                         } else {
-                            if (await this.getCityName(city_id) !== false) {
+                            if (await this.Cities.getCityName(city_id) !== false) {
                                 for (let i = 0; i < datas.length; i++) {
                                     let id = ids[i]
                                     let data = datas[i]
