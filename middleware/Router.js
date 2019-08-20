@@ -40,5 +40,29 @@ module.exports = class Router {
                 res.json(data)
             })
         })
+
+        this.app.get('/v1/data/get/gas', async (req, res) => {
+            const gas = require('../business/v1/Gas')
+            let Gas = new gas()
+            let city_id = req.query.city_id
+            let token = req.query.token
+            await Gas.getGas(city_id, token, async data => {
+                console.log(data)
+                res.status(data.code)
+                res.json(data)
+            })
+        })
+
+        this.app.get('/v1/data/get/dust', async (req, res) => {
+            const dust = require('../business/v1/Dust')
+            let Dust = new dust()
+            let city_id = req.query.city_id
+            let token = req.query.token
+            await Dust.getDust(city_id, token, async data => {
+                console.log(data)
+                res.status(data.code)
+                res.json(data)
+            })
+        })
     }
 }

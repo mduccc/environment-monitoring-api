@@ -43,7 +43,9 @@ module.exports = class CheckPoint {
                     let ImportDB = new importDB()
                     //await ImportDB.importAccounts()
                     //await ImportDB.importCitys()
-                    await ImportDB.importCityDatas()
+                    //await ImportDB.importCityDatas()
+                    //await ImportDB.importDust()
+                    //await ImportDB.importGas()
                     //await ImportDB.importToken()
                     break
                 }
@@ -59,6 +61,24 @@ module.exports = class CheckPoint {
 
         this.app.use('/v1/data/get', (req, res, next) => {
             console.log('/v1/data/get')
+            let token = req.query.token
+            if(token == null)
+                res.json({ message: 'invalid params' })
+            else
+                next()
+        })
+
+        this.app.use('/v1/data/get/gas', (req, res, next) => {
+            console.log('/v1/data/get/gas')
+            let token = req.query.token
+            if(token == null)
+                res.json({ message: 'invalid params' })
+            else
+                next()
+        })
+
+        this.app.use('/v1/data/get/dust', (req, res, next) => {
+            console.log('/v1/data/get/dust')
             let token = req.query.token
             if(token == null)
                 res.json({ message: 'invalid params' })
