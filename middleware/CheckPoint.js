@@ -43,7 +43,7 @@ module.exports = class CheckPoint {
                     let ImportDB = new importDB()
                     //await ImportDB.importAccounts()
                     //await ImportDB.importCitys()
-                    //await ImportDB.importCityDatas()
+                    await ImportDB.importCityDatas()
                     //await ImportDB.importToken()
                     break
                 }

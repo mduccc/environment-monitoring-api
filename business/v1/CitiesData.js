@@ -1,9 +1,9 @@
 /* root or admin can see all data, but normal user not */
 
-module.exports = class Datas {
+module.exports = class CitiesData {
     constructor() {
         this.httpStatus = require('../HttpStatus')
-        this.validateToken = require('../v1/ValidateToken')
+        this.validateToken = require('./ValidateToken')
         this.ValidateToken = new this.validateToken()
         this.admin = require('../../FirebaseAdmin')
         this.db = new this.admin().firestoreDB()

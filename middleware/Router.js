@@ -30,11 +30,11 @@ module.exports = class Router {
         })
 
         this.app.get('/v1/data/get', async (req, res) => {
-            const datas = require('../business/v1/Datas')
-            let Datas = new datas()
+            const citiesData = require('../business/v1/CitiesData')
+            let CitiesData = new citiesData()
             let city_id = req.query.city_id
             let token = req.query.token
-            await Datas.getCitiesData(city_id, token, async data => {
+            await CitiesData.getCitiesData(city_id, token, async data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)
