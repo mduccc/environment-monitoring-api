@@ -9,6 +9,7 @@ module.exports = class CitiesData {
         this.db = new this.admin().firestoreDB()
         this.cities = require('./Cities')
         this.Cities = new this.cities()
+        this.random = require('../v1/StringRandom')
     }
 
     async getCitiesData(city_id, token, callback) {
@@ -24,8 +25,8 @@ module.exports = class CitiesData {
             if (isTruth.level === 'normal') {
                 await this.db.collection('cities_data').get()
                     .then(async snapshot => {
-                        let ids = await snapshot.docs.map(doc => doc.id)
-                        let datas = await snapshot.docs.map(doc => doc.data())
+                        let ids = snapshot.docs.map(doc => doc.id)
+                        let datas = snapshot.docs.map(doc => doc.data())
                         for (let i = 0; i < datas.length; i++) {
                             let id = ids[i]
                             let data = datas[i]
@@ -42,13 +43,13 @@ module.exports = class CitiesData {
                         }
                     })
                     .catch(err => {
-                        console.log('Error adding documents', err)
+                        console.log('Error get cities_data #1', err)
                     })
             } else {
                 await this.db.collection('cities_data').get()
                     .then(async snapshot => {
-                        let ids = await snapshot.docs.map(doc => doc.id)
-                        let datas = await snapshot.docs.map(doc => doc.data())
+                        let ids = snapshot.docs.map(doc => doc.id)
+                        let datas = snapshot.docs.map(doc => doc.data())
                         if (city_id == null) {
                             for (let i = 0; i < datas.length; i++) {
                                 let id = ids[i]
@@ -79,12 +80,12 @@ module.exports = class CitiesData {
                                 }
                             } else {
                                 code = this.httpStatus.not_found_code,
-                                message = this.httpStatus.not_found_message
+                                    message = this.httpStatus.not_found_message
                             }
                         }
                     })
                     .catch(err => {
-                        console.log('Error adding documents', err)
+                        console.log('Error get cities_data #2', err)
                     })
             }
         }
@@ -100,6 +101,83 @@ module.exports = class CitiesData {
                 code: code,
                 message: message,
             }
+
+        callback(result)
+    }
+
+    async insertCitiesData(inputDatas, city_id, token, callback) {
+        console.log(inputDatas)
+        let code = this.httpStatus.unauthorized_code
+        let message = this.httpStatus.unauthorized_message
+        let result = []
+        let isTruth = await this.ValidateToken.isTruth(token)
+        let cityname = ''
+        let newCityId = ''
+        let next = true
+
+        if (isTruth !== false) {
+            if (isTruth.level === 'normal') {
+                newCityId = isTruth.city_id
+                // console.log('City id => ', isTruth.city_id)
+                cityname = await this.Cities.getCityName(newCityId)
+            } else {
+                if (city_id != null) {
+                    newCityId = city_id
+                    // console.log('City id => ', isTruth.city_id)
+                    cityname = await this.Cities.getCityName(newCityId)
+                    if (cityname === false) {
+                        cityname = null
+                        next = false
+                        code = this.httpStatus.not_found_code
+                        message = this.httpStatus.not_found_message
+                    }
+                }
+            }
+
+            if (next) {
+                await this.db.collection('cities_data').get()
+                    .then(async snapshot => {
+                        let ids = snapshot.docs.map(doc => doc.id)
+                        let datas = snapshot.docs.map(doc => doc.data())
+
+                        for (let i = 0; i < datas.length; i++) {
+                            let id = ids[i]
+                            let data = datas[i]
+                            if (data.city_id == newCityId) {
+                                let timeForUpdate = {
+                                    id_times: this.random(128),
+                                    time: inputDatas.time,
+                                    datas: inputDatas
+                                }
+
+                                let times = data.times
+                                times.push(timeForUpdate)
+                                //console.log(cityname, ' city times => ', times)
+                                await this.db.collection('cities_data').doc(id).update({ times: times })
+                                    .then(() => {
+                                        code = this.httpStatus.success_code
+                                        message = this.httpStatus.success_message
+                                    })
+                                    .catch(err => {
+                                        code = this.httpStatus.bad_request_code
+                                        message = this.httpStatus.bad_request_message
+                                    })
+                                break
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.log('Error get cities_data #3', err)
+                    })
+            }
+        }
+
+
+        result = {
+            code: code,
+            cityname: cityname,
+            message: message
+        }
 
         callback(result)
     }

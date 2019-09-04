@@ -23,7 +23,7 @@ module.exports = class CheckPoint {
                 case 'login': {
                     let username = req.query.username
                     let password = req.query.password
-                    if (username == null || password == null)
+                    if (username == null || password == null || username.trim() === '' || password.trim() == '')
                         res.json({ message: 'invalid params' })
                     else
                         next()
@@ -54,15 +54,23 @@ module.exports = class CheckPoint {
                     next()
                     break
                 }
-
             }
         })
-
 
         this.app.use('/v1/data/get', (req, res, next) => {
             console.log('/v1/data/get')
             let token = req.query.token
-            if(token == null)
+            if (token == null)
+                res.json({ message: 'invalid params' })
+            else
+                next()
+        })
+
+        this.app.use('/v1/data/insert', (req, res, next) => {
+            console.log('/v1/data/insert')
+            let token = req.query.token
+            let time = req.query.time
+            if (token == null || time == null || token.trim() === '' || time.trim() === '')
                 res.json({ message: 'invalid params' })
             else
                 next()
@@ -71,7 +79,7 @@ module.exports = class CheckPoint {
         this.app.use('/v1/data/get/gas', (req, res, next) => {
             console.log('/v1/data/get/gas')
             let token = req.query.token
-            if(token == null)
+            if (token == null)
                 res.json({ message: 'invalid params' })
             else
                 next()
@@ -80,7 +88,7 @@ module.exports = class CheckPoint {
         this.app.use('/v1/data/get/dust', (req, res, next) => {
             console.log('/v1/data/get/dust')
             let token = req.query.token
-            if(token == null)
+            if (token == null)
                 res.json({ message: 'invalid params' })
             else
                 next()

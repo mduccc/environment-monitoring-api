@@ -104,4 +104,8 @@ module.exports = class Dust {
         callback(result)
     }
 
+    insertDust(data, callback) {
+
+    }
+
 }

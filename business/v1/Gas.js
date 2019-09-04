@@ -104,4 +104,8 @@ module.exports = class Gas {
         callback(result)
     }
 
+    insertGas(data, callback) {
+
+    }
+
 }
