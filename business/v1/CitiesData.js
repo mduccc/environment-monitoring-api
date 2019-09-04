@@ -10,6 +10,7 @@ module.exports = class CitiesData {
         this.cities = require('./Cities')
         this.Cities = new this.cities()
         this.random = require('../v1/StringRandom')
+        this.todayWithHour = require('../v1/TodayWithHour')
     }
 
     async getCitiesData(city_id, token, callback) {
@@ -38,7 +39,6 @@ module.exports = class CitiesData {
                     message = this.httpStatus.not_found_message
                 }
             }
-            console.log('newCityId => ', newCityId)
             console.log('next => ', next)
             if (next) {
                 await this.db.collection('cities_data').get()
@@ -144,9 +144,14 @@ module.exports = class CitiesData {
                         code = this.httpStatus.not_found_code
                         message = this.httpStatus.not_found_message
                     }
+                } else {
+                    cityname = null
+                    next = false
+                    code = this.httpStatus.not_found_code
+                    message = this.httpStatus.not_found_message
                 }
             }
-
+            console.log('next => ', next)
             if (next) {
                 await this.db.collection('cities_data').get()
                     .then(async snapshot => {
@@ -159,13 +164,13 @@ module.exports = class CitiesData {
                             if (data.city_id == newCityId) {
                                 let timeForUpdate = {
                                     id_times: this.random(128),
-                                    time: inputDatas.time,
+                                    time: this.todayWithHour(),
                                     datas: inputDatas
                                 }
 
                                 let times = data.times
                                 times.push(timeForUpdate)
-                                //console.log(cityname, ' city times => ', times)
+                                console.log(cityname, ' city times => ', times)
                                 await this.db.collection('cities_data').doc(id).update({ times: times })
                                     .then(() => {
                                         code = this.httpStatus.success_code

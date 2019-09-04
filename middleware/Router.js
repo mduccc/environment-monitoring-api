@@ -79,7 +79,6 @@ module.exports = class Router {
             let humidity = req.query.humidity
             let token = req.query.token
             let city_id = req.query.city_id
-            let time = req.query.time
 
             let datas = {
                 rain: rain,
@@ -90,9 +89,8 @@ module.exports = class Router {
                 uv: uv,
                 dust: dust,
                 humidity: humidity,
-                time: time
             }
-            // http://localhost:5000/v1/data/insert?time=18-08-2019 03:40&rain=0&gas=0&fire=0&temp=0&co2=0&uv=0&dust=0&humidity=0&token=
+            // http://localhost:5000/v1/data/insert?rain=0&gas=0&fire=0&temp=0&co2=0&uv=0&dust=0&humidity=0&token=
             await CitiesData.insertCitiesData(datas, city_id, token, data => {
                 console.log(data)
                 res.status(data.code)
