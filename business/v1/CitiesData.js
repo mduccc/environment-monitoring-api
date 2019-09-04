@@ -18,74 +18,87 @@ module.exports = class CitiesData {
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
         let isTruth = await this.ValidateToken.isTruth(token)
+        let cityname = ''
+        let newCityId = ''
+        let next = true
 
         if (isTruth !== false) {
-            code = this.httpStatus.success_code
-            message = this.httpStatus.success_message
             if (isTruth.level === 'normal') {
-                await this.db.collection('cities_data').get()
-                    .then(async snapshot => {
-                        let ids = snapshot.docs.map(doc => doc.id)
-                        let datas = snapshot.docs.map(doc => doc.data())
-                        for (let i = 0; i < datas.length; i++) {
-                            let id = ids[i]
-                            let data = datas[i]
-                            //console.log('City data =>', data)
-                            if (data.city_id === isTruth.city_id) {
-                                console.log('City data =>', data)
-                                cityData.push({
-                                    city_id: data.city_id,
-                                    city_name: await this.Cities.getCityName(data.city_id),
-                                    times: data.times
-                                })
-                                break
-                            }
-                        }
-                    })
-                    .catch(err => {
-                        console.log('Error get cities_data #1', err)
-                    })
+                newCityId = isTruth.city_id
+                // console.log('City id => ', isTruth.city_id)
+                cityname = await this.Cities.getCityName(newCityId)
             } else {
+                newCityId = city_id
+                // console.log('City id => ', isTruth.city_id)
+                cityname = await this.Cities.getCityName(newCityId)
+                if (newCityId != null && cityname === false) {
+                    cityname = null
+                    next = false
+                    code = this.httpStatus.not_found_code
+                    message = this.httpStatus.not_found_message
+                }
+            }
+            console.log('newCityId => ', newCityId)
+            console.log('next => ', next)
+            if (next) {
                 await this.db.collection('cities_data').get()
                     .then(async snapshot => {
                         let ids = snapshot.docs.map(doc => doc.id)
                         let datas = snapshot.docs.map(doc => doc.data())
-                        if (city_id == null) {
+                        if (isTruth.level === 'normal') {
                             for (let i = 0; i < datas.length; i++) {
                                 let id = ids[i]
                                 let data = datas[i]
                                 //console.log('City data =>', data)
-                                //console.log('City data =>', data)
-                                cityData.push({
-                                    city_id: data.city_id,
-                                    city_name: await this.Cities.getCityName(data.city_id),
-                                    times: data.times
-                                })
+                                if (data.city_id === newCityId) {
+                                    console.log('City data =>', data)
+                                    cityData.push({
+                                        city_id: data.city_id,
+                                        city_name: cityname,
+                                        times: data.times
+                                    })
+                                    code = this.httpStatus.success_code
+                                    message = this.httpStatus.success_message
+                                    break
+                                }
                             }
                         } else {
-                            if (await this.Cities.getCityName(city_id) !== false) {
+                            if (newCityId == null) {
                                 for (let i = 0; i < datas.length; i++) {
                                     let id = ids[i]
                                     let data = datas[i]
                                     //console.log('City data =>', data)
                                     //console.log('City data =>', data)
-                                    if (data.city_id === city_id) {
+                                    cityData.push({
+                                        city_id: data.city_id,
+                                        city_name: await this.Cities.getCityName(data.city_id),
+                                        times: data.times
+                                    })
+                                    code = this.httpStatus.success_code
+                                    message = this.httpStatus.success_message
+                                }
+                            } else {
+                                for (let i = 0; i < datas.length; i++) {
+                                    let id = ids[i]
+                                    let data = datas[i]
+                                    //console.log('City data =>', data)
+                                    //console.log('City data =>', data)
+                                    if (data.city_id === newCityId) {
                                         cityData.push({
                                             city_id: data.city_id,
-                                            city_name: await this.Cities.getCityName(data.city_id),
+                                            city_name: cityname,
                                             times: data.times
                                         })
+                                        code = this.httpStatus.success_code
+                                        message = this.httpStatus.success_message
                                         break
                                     }
                                 }
-                            } else {
-                                code = this.httpStatus.not_found_code,
-                                    message = this.httpStatus.not_found_message
                             }
                         }
                     })
                     .catch(err => {
-                        console.log('Error get cities_data #2', err)
+                        console.log('Error get cities_data #1', err)
                     })
             }
         }
@@ -171,7 +184,6 @@ module.exports = class CitiesData {
                     })
             }
         }
-
 
         result = {
             code: code,
