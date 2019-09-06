@@ -75,24 +75,6 @@ module.exports = class CheckPoint {
                 next()
         })
 
-        this.app.use('/v1/data/get/gas', (req, res, next) => {
-            console.log('/v1/data/get/gas')
-            let token = req.query.token
-            if (token == null)
-                res.json({ message: 'invalid params' })
-            else
-                next()
-        })
-
-        this.app.use('/v1/data/get/dust', (req, res, next) => {
-            console.log('/v1/data/get/dust')
-            let token = req.query.token
-            if (token == null)
-                res.json({ message: 'invalid params' })
-            else
-                next()
-        })
-
         this.Router.v1()
     }
 

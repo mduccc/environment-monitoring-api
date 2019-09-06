@@ -13,7 +13,43 @@ module.exports = class CitiesData {
         this.todayWithHour = require('../v1/TodayWithHour')
     }
 
-    async getCitiesData(city_id, token, callback) {
+    filterData(input, filter) {
+        if (filter == null)
+            return null
+        let newInput = input
+        let i = -1
+        let j = -1
+        input.forEach(element => {
+            //console.log(element)
+            i++
+            element.times.forEach(_element => {
+                //console.log(_element.datas)
+                j++
+                if (_element.datas['rain'] != undefined && filter != 'rain')
+                    delete newInput[i].times[j].datas['rain']
+                if (_element.datas['dust'] != undefined && filter != 'dust')
+                    delete newInput[i].times[j].datas['dust']
+                if (_element.datas['humidity'] != undefined && filter != 'humidity')
+                    delete newInput[i].times[j].datas['humidity']
+                if (_element.datas['co2'] != undefined && filter != 'co2 ')
+                    delete newInput[i].times[j].datas['co2']
+                if (_element.datas['temp'] != undefined && filter != 'temp')
+                    delete newInput[i].times[j].datas['temp']
+                if (_element.datas['uv'] != undefined && filter != 'uv')
+                    delete newInput[i].times[j].datas['uv']
+                if (_element.datas['fire'] != undefined && filter != 'fire')
+                    delete newInput[i].times[j].datas['fire']
+                if (_element.datas['gas'] != undefined && filter != 'gas')
+                    delete newInput[i].times[j].datas['gas']
+
+                console.log( newInput[i].times[j].datas)
+            })
+        })
+
+        return newInput
+    }
+
+    async getCitiesData(filter, city_id, token, callback) {
         let result = null
         let cityData = []
         let code = this.httpStatus.unauthorized_code
@@ -51,7 +87,7 @@ module.exports = class CitiesData {
                                 let data = datas[i]
                                 //console.log('City data =>', data)
                                 if (data.city_id === newCityId) {
-                                    console.log('City data =>', data)
+                                    //console.log('City data =>', data)
                                     cityData.push({
                                         city_id: data.city_id,
                                         city_name: cityname,
@@ -102,6 +138,10 @@ module.exports = class CitiesData {
                     })
             }
         }
+
+        let filterData = this.filterData(cityData, filter)
+        if (filterData != null)
+            cityData = filterData
 
         if (code === this.httpStatus.success_code)
             result = {
