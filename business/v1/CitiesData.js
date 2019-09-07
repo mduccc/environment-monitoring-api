@@ -14,6 +14,8 @@ module.exports = class CitiesData {
     }
 
     filterData(input, filter) {
+        filter = filter.trim()
+        console.log('filter => ', filter)
         if (filter == null)
             return null
         let newInput = input
@@ -25,24 +27,13 @@ module.exports = class CitiesData {
             element.times.forEach(_element => {
                 //console.log(_element.datas)
                 j++
-                if (_element.datas['rain'] != undefined && filter != 'rain')
-                    delete newInput[i].times[j].datas['rain']
-                if (_element.datas['dust'] != undefined && filter != 'dust')
-                    delete newInput[i].times[j].datas['dust']
-                if (_element.datas['humidity'] != undefined && filter != 'humidity')
-                    delete newInput[i].times[j].datas['humidity']
-                if (_element.datas['co2'] != undefined && filter != 'co2 ')
-                    delete newInput[i].times[j].datas['co2']
-                if (_element.datas['temp'] != undefined && filter != 'temp')
-                    delete newInput[i].times[j].datas['temp']
-                if (_element.datas['uv'] != undefined && filter != 'uv')
-                    delete newInput[i].times[j].datas['uv']
-                if (_element.datas['fire'] != undefined && filter != 'fire')
-                    delete newInput[i].times[j].datas['fire']
-                if (_element.datas['gas'] != undefined && filter != 'gas')
-                    delete newInput[i].times[j].datas['gas']
+                for (let property in _element.datas) {
+                    //console.log(property)
+                    if (property != filter)
+                        delete newInput[i].times[j].datas[property]
+                }
 
-                console.log( newInput[i].times[j].datas)
+                console.log(newInput[i].times[j].datas)
             })
         })
 
