@@ -58,6 +58,23 @@ module.exports = class Router {
             let token = req.query.token
             let city_id = req.query.city_id
 
+            if (rain === undefined)
+                rain = ''
+            if (gas === undefined)
+                gas = ''
+            if (fire === undefined)
+                fire = ''
+            if (temp === undefined)
+                temp = ''
+            if (co2 === undefined)
+                co2 = ''
+            if (uv === undefined)
+                uv = ''
+            if (dust === undefined)
+                dust = ''
+            if (humidity === undefined)
+                humidity = ''
+
             let datas = {
                 rain: rain,
                 gas: gas,

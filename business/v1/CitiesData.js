@@ -23,7 +23,7 @@ module.exports = class CitiesData {
             //console.log(element)
             for (let j = 0; j < element.times.length; j++) {
                 let _element = element.times[j]
-                console.log(_element.datas)
+                //console.log(_element.datas)
                 for (let property in _element.datas) {
                     //console.log(property)
                     console.log(i, ', ', j)
