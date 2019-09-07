@@ -9,8 +9,8 @@ module.exports = class PlacesData {
         this.db = new this.admin().firestoreDB()
         this.places = require('./Place')
         this.Places = new this.places()
-        this.random = require('../v1/StringRandom')
-        this.todayWithHour = require('../v1/TodayWithHour')
+        this.random = require('./StringRandom')
+        this.todayWithHour = require('./TodayWithHour')
     }
 
     filterData(input, filter) {
@@ -192,7 +192,7 @@ module.exports = class PlacesData {
                             let data = datas[i]
                             if (data.place_id == newplaceId) {
                                 let timeForUpdate = {
-                                    id_times: this.random(128),
+                                    time_id: this.random(128),
                                     time: this.todayWithHour(),
                                     datas: inputDatas
                                 }

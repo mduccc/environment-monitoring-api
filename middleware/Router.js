@@ -29,7 +29,7 @@ module.exports = class Router {
         })
 
         this.app.get('/v1/data/get', async (req, res) => {
-            const citiesData = require('../business/v1/CitiesData')
+            const citiesData = require('../business/v1/PlacesData')
             let CitiesData = new citiesData()
             let place_id = req.query.place_id
             let token = req.query.token
@@ -43,7 +43,7 @@ module.exports = class Router {
         })
 
         this.app.get('/v1/data/insert', async (req, res) => {
-            const citiesData = require('../business/v1/CitiesData')
+            const citiesData = require('../business/v1/PlacesData')
             let CitiesData = new citiesData()
 
             let rain = req.query.rain
