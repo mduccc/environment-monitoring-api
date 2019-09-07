@@ -14,29 +14,27 @@ module.exports = class CitiesData {
     }
 
     filterData(input, filter) {
-        filter = filter.trim()
         console.log('filter => ', filter)
         if (filter == null)
             return null
         let newInput = input
-        let i = -1
-        let j = -1
-        input.forEach(element => {
+        for (let i = 0; i < input.length; i++) {
+            let element = input[i]
             //console.log(element)
-            i++
-            element.times.forEach(_element => {
-                //console.log(_element.datas)
-                j++
+            for (let j = 0; j < element.times.length; j++) {
+                let _element = element.times[j]
+                console.log(_element.datas)
                 for (let property in _element.datas) {
                     //console.log(property)
+                    console.log(i, ', ', j)
+                    //console.log(newInput[i].times[j].datas)
                     if (property != filter)
                         delete newInput[i].times[j].datas[property]
                 }
 
-                console.log(newInput[i].times[j].datas)
-            })
-        })
-
+                //console.log(newInput[i].times[j].datas)
+            }
+        }
         return newInput
     }
 
