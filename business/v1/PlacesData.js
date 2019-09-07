@@ -221,7 +221,7 @@ module.exports = class PlacesData {
 
         result = {
             code: code,
-            placename: placename,
+            place_name: placename,
             message: message
         }
 
