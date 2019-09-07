@@ -39,11 +39,11 @@ module.exports = class CheckPoint {
                 }
                 case 'import': {
                     res.send('Importing...')
-                    const importDB = require('../business/v1/ImportDB')
-                    let ImportDB = new importDB()
+                    //const importDB = require('../business/v1/ImportDB')
+                    //let ImportDB = new importDB()
                     //await ImportDB.importAccounts()
-                    //await ImportDB.importCitys()
-                    //await ImportDB.importCityDatas()
+                    //await ImportDB.importplaces()
+                    //await ImportDB.importplaceDatas()
                     //await ImportDB.importDust()
                     //await ImportDB.importGas()
                     //await ImportDB.importToken()

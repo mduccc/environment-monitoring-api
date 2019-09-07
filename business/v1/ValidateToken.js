@@ -50,7 +50,7 @@ module.exports = class ValidateToken {
                         if(element.level === 'normal')
                             result = {
                                 level: element.level,
-                                city_id: element.city_id   
+                                place_id: element.place_id   
                             }
                         else
                             result = {
@@ -87,7 +87,7 @@ module.exports = class ValidateToken {
                         accID: isExists.accID,
                         level: accInfo.level,
                         date_created: isExists.date_created,
-                        city_id: accInfo.city_id
+                        place_id: accInfo.place_id
                     }
                 else
                 result = {

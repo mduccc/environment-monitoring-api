@@ -1,14 +1,14 @@
 /* root or admin can see all data, but normal user not */
 
-module.exports = class CitiesData {
+module.exports = class PlacesData {
     constructor() {
         this.httpStatus = require('../HttpStatus')
         this.validateToken = require('./ValidateToken')
         this.ValidateToken = new this.validateToken()
         this.admin = require('../../FirebaseAdmin')
         this.db = new this.admin().firestoreDB()
-        this.cities = require('./Cities')
-        this.Cities = new this.cities()
+        this.places = require('./Place')
+        this.Places = new this.places()
         this.random = require('../v1/StringRandom')
         this.todayWithHour = require('../v1/TodayWithHour')
     }
@@ -38,27 +38,27 @@ module.exports = class CitiesData {
         return newInput
     }
 
-    async getCitiesData(filter, city_id, token, callback) {
+    async getPlacesData(filter, place_id, token, callback) {
         let result = null
-        let cityData = []
+        let placeData = []
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
         let isTruth = await this.ValidateToken.isTruth(token)
-        let cityname = ''
-        let newCityId = ''
+        let placename = ''
+        let newplaceId = ''
         let next = true
 
         if (isTruth !== false) {
             if (isTruth.level === 'normal') {
-                newCityId = isTruth.city_id
-                // console.log('City id => ', isTruth.city_id)
-                cityname = await this.Cities.getCityName(newCityId)
+                newplaceId = isTruth.place_id
+                // console.log('place id => ', isTruth.place_id)
+                placename = await this.Places.getplaceName(newplaceId)
             } else {
-                newCityId = city_id
-                // console.log('City id => ', isTruth.city_id)
-                cityname = await this.Cities.getCityName(newCityId)
-                if (newCityId != null && cityname === false) {
-                    cityname = null
+                newplaceId = place_id
+                // console.log('place id => ', isTruth.place_id)
+                placename = await this.Places.getplaceName(newplaceId)
+                if (newplaceId != null && placename === false) {
+                    placename = null
                     next = false
                     code = this.httpStatus.not_found_code
                     message = this.httpStatus.not_found_message
@@ -66,7 +66,7 @@ module.exports = class CitiesData {
             }
             console.log('next => ', next)
             if (next) {
-                await this.db.collection('cities_data').get()
+                await this.db.collection('places_data').get()
                     .then(async snapshot => {
                         let ids = snapshot.docs.map(doc => doc.id)
                         let datas = snapshot.docs.map(doc => doc.data())
@@ -74,12 +74,12 @@ module.exports = class CitiesData {
                             for (let i = 0; i < datas.length; i++) {
                                 let id = ids[i]
                                 let data = datas[i]
-                                //console.log('City data =>', data)
-                                if (data.city_id === newCityId) {
-                                    //console.log('City data =>', data)
-                                    cityData.push({
-                                        city_id: data.city_id,
-                                        city_name: cityname,
+                                //console.log('place data =>', data)
+                                if (data.place_id === newplaceId) {
+                                    //console.log('place data =>', data)
+                                    placeData.push({
+                                        place_id: data.place_id,
+                                        place_name: placename,
                                         times: data.times
                                     })
                                     code = this.httpStatus.success_code
@@ -88,15 +88,15 @@ module.exports = class CitiesData {
                                 }
                             }
                         } else {
-                            if (newCityId == null) {
+                            if (newplaceId == null) {
                                 for (let i = 0; i < datas.length; i++) {
                                     let id = ids[i]
                                     let data = datas[i]
-                                    //console.log('City data =>', data)
-                                    //console.log('City data =>', data)
-                                    cityData.push({
-                                        city_id: data.city_id,
-                                        city_name: await this.Cities.getCityName(data.city_id),
+                                    //console.log('place data =>', data)
+                                    //console.log('place data =>', data)
+                                    placeData.push({
+                                        place_id: data.place_id,
+                                        place_name: await this.Places.getplaceName(data.place_id),
                                         times: data.times
                                     })
                                     code = this.httpStatus.success_code
@@ -106,12 +106,12 @@ module.exports = class CitiesData {
                                 for (let i = 0; i < datas.length; i++) {
                                     let id = ids[i]
                                     let data = datas[i]
-                                    //console.log('City data =>', data)
-                                    //console.log('City data =>', data)
-                                    if (data.city_id === newCityId) {
-                                        cityData.push({
-                                            city_id: data.city_id,
-                                            city_name: cityname,
+                                    //console.log('place data =>', data)
+                                    //console.log('place data =>', data)
+                                    if (data.place_id === newplaceId) {
+                                        placeData.push({
+                                            place_id: data.place_id,
+                                            place_name: placename,
                                             times: data.times
                                         })
                                         code = this.httpStatus.success_code
@@ -123,20 +123,20 @@ module.exports = class CitiesData {
                         }
                     })
                     .catch(err => {
-                        console.log('Error get cities_data #1', err)
+                        console.log('Error get places_data #1', err)
                     })
             }
         }
 
-        let filterData = this.filterData(cityData, filter)
+        let filterData = this.filterData(placeData, filter)
         if (filterData != null)
-            cityData = filterData
+            placeData = filterData
 
         if (code === this.httpStatus.success_code)
             result = {
                 code: code,
                 message: message,
-                data: cityData
+                data: placeData
             }
         else
             result = {
@@ -147,34 +147,34 @@ module.exports = class CitiesData {
         callback(result)
     }
 
-    async insertCitiesData(inputDatas, city_id, token, callback) {
+    async insertPlacesData(inputDatas, place_id, token, callback) {
         console.log(inputDatas)
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
         let result = []
         let isTruth = await this.ValidateToken.isTruth(token)
-        let cityname = ''
-        let newCityId = ''
+        let placename = ''
+        let newplaceId = ''
         let next = true
 
         if (isTruth !== false) {
             if (isTruth.level === 'normal') {
-                newCityId = isTruth.city_id
-                // console.log('City id => ', isTruth.city_id)
-                cityname = await this.Cities.getCityName(newCityId)
+                newplaceId = isTruth.place_id
+                // console.log('place id => ', isTruth.place_id)
+                placename = await this.Places.getplaceName(newplaceId)
             } else {
-                if (city_id != null) {
-                    newCityId = city_id
-                    // console.log('City id => ', isTruth.city_id)
-                    cityname = await this.Cities.getCityName(newCityId)
-                    if (cityname === false) {
-                        cityname = null
+                if (place_id != null) {
+                    newplaceId = place_id
+                    // console.log('place id => ', isTruth.place_id)
+                    placename = await this.Places.getplaceName(newplaceId)
+                    if (placename === false) {
+                        placename = null
                         next = false
                         code = this.httpStatus.not_found_code
                         message = this.httpStatus.not_found_message
                     }
                 } else {
-                    cityname = null
+                    placename = null
                     next = false
                     code = this.httpStatus.not_found_code
                     message = this.httpStatus.not_found_message
@@ -182,7 +182,7 @@ module.exports = class CitiesData {
             }
             console.log('next => ', next)
             if (next) {
-                await this.db.collection('cities_data').get()
+                await this.db.collection('places_data').get()
                     .then(async snapshot => {
                         let ids = snapshot.docs.map(doc => doc.id)
                         let datas = snapshot.docs.map(doc => doc.data())
@@ -190,7 +190,7 @@ module.exports = class CitiesData {
                         for (let i = 0; i < datas.length; i++) {
                             let id = ids[i]
                             let data = datas[i]
-                            if (data.city_id == newCityId) {
+                            if (data.place_id == newplaceId) {
                                 let timeForUpdate = {
                                     id_times: this.random(128),
                                     time: this.todayWithHour(),
@@ -199,8 +199,8 @@ module.exports = class CitiesData {
 
                                 let times = data.times
                                 times.push(timeForUpdate)
-                                console.log(cityname, ' city times => ', times)
-                                await this.db.collection('cities_data').doc(id).update({ times: times })
+                                console.log(placename, ' place times => ', times)
+                                await this.db.collection('places_data').doc(id).update({ times: times })
                                     .then(() => {
                                         code = this.httpStatus.success_code
                                         message = this.httpStatus.success_message
@@ -214,14 +214,14 @@ module.exports = class CitiesData {
                         }
                     })
                     .catch(err => {
-                        console.log('Error get cities_data #3', err)
+                        console.log('Error get places_data #3', err)
                     })
             }
         }
 
         result = {
             code: code,
-            cityname: cityname,
+            placename: placename,
             message: message
         }
 

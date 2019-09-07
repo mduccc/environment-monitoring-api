@@ -32,11 +32,11 @@ module.exports = class Router {
         this.app.get('/v1/data/get', async (req, res) => {
             const citiesData = require('../business/v1/CitiesData')
             let CitiesData = new citiesData()
-            let city_id = req.query.city_id
+            let place_id = req.query.place_id
             let token = req.query.token
             let filter = req.query.filter
 
-            await CitiesData.getCitiesData(filter, city_id, token, async data => {
+            await CitiesData.getPlacesData(filter, place_id, token, async data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)
@@ -56,7 +56,7 @@ module.exports = class Router {
             let dust = req.query.dust
             let humidity = req.query.humidity
             let token = req.query.token
-            let city_id = req.query.city_id
+            let place_id = req.query.place_id
 
             if (rain === undefined)
                 rain = ''
@@ -86,7 +86,7 @@ module.exports = class Router {
                 humidity: humidity,
             }
             // http://localhost:5000/v1/data/insert?rain=0&gas=0&fire=0&temp=0&co2=0&uv=0&dust=0&humidity=0&token=
-            await CitiesData.insertCitiesData(datas, city_id, token, data => {
+            await CitiesData.insertPlacesData(datas, place_id, token, data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)

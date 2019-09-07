@@ -1,22 +1,22 @@
-module.exports = class Cities {
+module.exports = class Places {
     constructor() {
         this.admin = require('../../FirebaseAdmin')
         this.db = new this.admin().firestoreDB()
     }
 
-    async getCityName(city_id) {
+    async getplaceName(place_id) {
         let result = false
-        await this.db.collection('cities').get()
+        await this.db.collection('places').get()
             .then(async snapshot => {
                 let ids = await snapshot.docs.map(doc => doc.id)
                 let datas = await snapshot.docs.map(doc => doc.data())
                 for (let i = 0; i < datas.length; i++) {
                     let id = ids[i]
                     let data = datas[i]
-                    //console.log('City list =>', data)
-                    if (city_id === id) {
-                        //console.log('City name =>', data.city_name)
-                        result = data.city_name
+                    //console.log('place list =>', data)
+                    if (place_id === id) {
+                        //console.log('place name =>', data.place_name)
+                        result = data.place_name
                         break
                     }
                 }
@@ -25,7 +25,7 @@ module.exports = class Cities {
                 console.log('Error adding documents', err)
             })
 
-        console.log('City name => ', result)
+        console.log('place name => ', result)
 
         return result
     }
