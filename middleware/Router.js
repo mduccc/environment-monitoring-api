@@ -12,8 +12,7 @@ module.exports = class Router {
             res.json({ message: 'No Action' })
         })
 
-
-        this.app.get('/v1/login', async (req, res) => {
+        this.app.post('/v1/login', async (req, res) => {
             const login = require('../business/v1/Login')
             let username = req.query.username
             let password = req.query.password
