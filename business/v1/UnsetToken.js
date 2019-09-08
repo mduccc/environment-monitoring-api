@@ -11,7 +11,7 @@ module.exports = class UnsetToken {
         let message = this.httpStatus.unauthorized_message
         let next = true
 
-        if (this.Validate.isTruth(token) == false)
+        if (await this.Validate.isTruth(token) == false)
             next = false
 
         if (next) {
