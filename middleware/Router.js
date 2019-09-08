@@ -24,6 +24,16 @@ module.exports = class Router {
             })
         })
 
+        this.app.get('/v1/logout', async (req, res) => {
+            const unsetToken = require('../business/v1/UnsetToken')
+            let UnsetToken = new unsetToken()
+            let token = req.query.token
+
+            await UnsetToken.unset(token, async data => {
+                res.json(data)
+            })
+        })
+
         this.app.get('/v1/register', async (req, res) => {
             res.send('Register')
         })

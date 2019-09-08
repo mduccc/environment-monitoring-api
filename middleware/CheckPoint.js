@@ -29,6 +29,14 @@ module.exports = class CheckPoint {
                         next()
                     break
                 }
+                case 'logout': {
+                    let token = req.query.token
+                    if (token == null)
+                        res.json({ message: 'invalid params' })
+                    else
+                        next()
+                    break
+                }
                 case 'register': {
                     next()
                     break
