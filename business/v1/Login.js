@@ -43,7 +43,7 @@ module.exports = class Login {
     async validate(username, password, callback) {
         username = username.trim()
         password = password.trim()
-        password = this.sha256(password+this.private_key)
+        password = this.sha256(password + this.private_key)
 
         let token = null
         let code = this.httpStatus.unauthorized_code
@@ -70,7 +70,9 @@ module.exports = class Login {
                 }
             })
             .catch(err => {
-                console.log('Error getting documents', err)
+                console.log('Error get accounts', err)
+                code = this.httpStatus.bad_request_code
+                message = this.httpStatus.bad_request_message
             })
 
         let result = null

@@ -124,6 +124,8 @@ module.exports = class PlacesData {
                     })
                     .catch(err => {
                         console.log('Error get places_data #1', err)
+                        code = this.httpStatus.bad_request_code
+                        message = this.httpStatus.bad_request_message
                     })
             }
         }
@@ -215,6 +217,8 @@ module.exports = class PlacesData {
                     })
                     .catch(err => {
                         console.log('Error get places_data #3', err)
+                        code = this.httpStatus.bad_request_code
+                        message = this.httpStatus.bad_request_message
                     })
             }
         }
