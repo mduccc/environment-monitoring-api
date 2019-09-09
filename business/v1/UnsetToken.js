@@ -25,7 +25,7 @@ module.exports = class UnsetToken {
 
                         //console.log('token => ', element)
                         if (element.token === token) {
-                            await this.db.collection('tokens').doc(id).update({ date_created: '1-1-1970' })
+                            await this.db.collection('tokens').doc(id).update({ date_created: '01-01-1970' })
                                 .then(() => {
                                     code = this.httpStatus.success_code
                                     message = this.httpStatus.success_message

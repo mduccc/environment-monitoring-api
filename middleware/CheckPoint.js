@@ -77,7 +77,7 @@ module.exports = class CheckPoint {
         this.app.use('/v1/data/insert', (req, res, next) => {
             console.log('/v1/data/insert')
             let token = req.query.token
-            if (token == null && token.trim() === '')
+            if (token == null || token.trim() === '')
                 res.json({ message: 'invalid params' })
             else
                 next()
