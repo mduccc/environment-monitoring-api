@@ -1,14 +1,25 @@
 module.exports = class CheckPoint {
-    constructor(app) {
+    constructor(app, io) {
         this.app = app
+        this.io = io
         this.router = require('./Router')
-        this.Router = new this.router(this.app)
+        this.Router = new this.router(this.app, this.io)
         this.httpStatus = require('../business/HttpStatus')
+        this.path = require('path')
     }
 
     go() {
         this.app.use((req, res, next) => {
             next()
+        })
+
+        this.app.get('/socket', (req, res, next) => {
+            res.sendFile(this.path.resolve('unittest/socket.io.html'))
+        })
+
+        this.app.get('/emit', (req, res, next) => {
+            this.io.emit('notify', 'hello')
+            res.send('emit')
         })
 
         this.app.use('/v1/:path', async (req, res, next) => {

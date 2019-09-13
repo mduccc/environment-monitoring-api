@@ -1,6 +1,7 @@
 module.exports = class Router {
-    constructor(app) {
+    constructor(app, io) {
         this.app = app
+        this.io = io
     }
 
     v1() {
@@ -45,7 +46,7 @@ module.exports = class Router {
             let token = req.query.token
             let filter = req.query.filter
 
-            await CitiesData.getPlacesData(filter, place_id, token, async data => {
+            await CitiesData.getPlacesData(filter, place_id, token, data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)
@@ -95,8 +96,17 @@ module.exports = class Router {
                 humidity: humidity,
             }
             // http://localhost:5000/v1/data/insert?rain=0&gas=0&fire=0&temp=0&co2=0&uv=0&dust=0&humidity=0&token=
-            await CitiesData.insertPlacesData(datas, place_id, token, data => {
+            await CitiesData.insertPlacesData(datas, place_id, token, async data => {
                 console.log(data)
+
+                if(data.code === 200) {
+                    await CitiesData.getPlacesData(null, place_id, token, data => {
+                        console.log(data)
+                        if(data.data.length > 0) 
+                            this.io.emit(data.data[0].place_id, data)
+                    })
+                }
+
                 res.status(data.code)
                 res.json(data)
             })
