@@ -99,10 +99,10 @@ module.exports = class Router {
             await CitiesData.insertPlacesData(datas, place_id, token, async data => {
                 console.log(data)
 
-                if(data.code === 200) {
+                if (data.code === 200) {
                     await CitiesData.getPlacesData(null, place_id, token, data => {
                         console.log(data)
-                        if(data.data.length > 0) 
+                        if (data.data.length > 0)
                             this.io.emit(data.data[0].place_id, data)
                     })
                 }
@@ -207,10 +207,10 @@ module.exports = class Router {
             await CitiesData.insertPlacesData(datas, place_id, token, async data => {
                 console.log(data)
 
-                if(data.code === 200) {
-                    await CitiesData.getPlacesData(null, place_id, token, data => {
+                if (data.code === 200) {
+                    CitiesData.getPlacesData(null, place_id, token, data => {
                         console.log(data)
-                        if(data.data.length > 0) 
+                        if (data.data.length > 0)
                             this.io.emit(token, data)
                     })
                 }
