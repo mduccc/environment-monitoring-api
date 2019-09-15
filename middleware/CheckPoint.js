@@ -6,9 +6,11 @@ module.exports = class CheckPoint {
         this.Router = new this.router(this.app, this.io)
         this.httpStatus = require('../business/HttpStatus')
         this.path = require('path')
+        this.bodyParser = require('body-parser')
     }
 
     go() {
+        this.app.use(this.bodyParser.json())
         this.app.use((req, res, next) => {
             next()
         })
@@ -32,8 +34,8 @@ module.exports = class CheckPoint {
                     break
                 }
                 case 'login': {
-                    let username = req.query.username
-                    let password = req.query.password
+                    let username = req.body.username
+                    let password = req.body.password
                     if (username == null || password == null || username.trim() === '' || password.trim() == '')
                         res.json({ message: 'invalid params' })
                     else
@@ -41,8 +43,8 @@ module.exports = class CheckPoint {
                     break
                 }
                 case 'logout': {
-                    let token = req.query.token
-                    if (token == null)
+                    let token = req.body.token
+                    if (token == null || token.trim() === '')
                         res.json({ message: 'invalid params' })
                     else
                         next()
@@ -78,8 +80,8 @@ module.exports = class CheckPoint {
 
         this.app.use('/v1/data/get', (req, res, next) => {
             console.log('/v1/data/get')
-            let token = req.query.token
-            if (token == null)
+            let token = req.body.token
+            if (token == null || token.trim() === '')
                 res.json({ message: 'invalid params' })
             else
                 next()
@@ -87,7 +89,7 @@ module.exports = class CheckPoint {
 
         this.app.use('/v1/data/insert', (req, res, next) => {
             console.log('/v1/data/insert')
-            let token = req.query.token
+            let token = req.body.token
             if (token == null || token.trim() === '')
                 res.json({ message: 'invalid params' })
             else
