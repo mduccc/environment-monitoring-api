@@ -86,6 +86,15 @@ module.exports = class CheckPoint {
                 next()
         })
 
+        this.app.use('/v1/data/get/current', (req, res, next) => {
+            console.log('/v1/data/get/current')
+            let token = req.query.token
+            if (token == null)
+                res.json({ message: 'invalid params' })
+            else
+                next()
+        })
+
         this.app.use('/v1/data/insert', (req, res, next) => {
             console.log('/v1/data/insert')
             let token = req.query.token
@@ -175,6 +184,15 @@ module.exports = class CheckPoint {
             else
                 next()
         })
+
+        // this.app.use('/v1.1/data/get/current', (req, res, next) => {
+        //     console.log('/v1.1/data/get/current')
+        //     let token = req.body.token
+        //     if (token == null || token.trim() === '')
+        //         res.json({ message: 'invalid params' })
+        //     else
+        //         next()
+        // })
 
         this.app.use('/v1.1/data/insert', (req, res, next) => {
             console.log('/v1.1/data/insert')

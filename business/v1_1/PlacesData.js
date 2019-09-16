@@ -13,6 +13,36 @@ module.exports = class PlacesData {
         this.todayWithHour = require('./TodayWithHour')
     }
 
+    currentData(input) {
+        let result = []
+        for (let i = 0; i < input.length; i++) {
+            let data = input[i]
+            let newData = data.times[data.times.length - 1];
+
+            result.push(newData)
+        }
+
+        return result
+    }
+
+    byDate(input, date) {
+        console.log(date)
+        let result = []
+        for (let i = 0; i < input.length; i++) {
+            let data = input[i]
+            for (let j = 0; j < data.times.length; j++) {
+                let time = data.times[j].time
+                let getDate = time.substring(0, time.indexOf(' ')).trim()
+                if (date.trim() === getDate) {
+                    //console.log(getDate)
+                    result.push(data.times[j])
+                }
+            }
+        }
+
+        return result
+    }
+
     filterData(input, filter) {
         console.log('filter => ', filter)
         if (filter == null)
@@ -38,7 +68,7 @@ module.exports = class PlacesData {
         return newInput
     }
 
-    async getPlacesData(filter, place_id, token, callback) {
+    async getPlacesData(filter, place_id, token, callback, onlyCurrent, date) {
         let result = null
         let placeData = []
         let code = this.httpStatus.unauthorized_code
@@ -133,6 +163,12 @@ module.exports = class PlacesData {
         let filterData = this.filterData(placeData, filter)
         if (filterData != null)
             placeData = filterData
+
+        if (date != null)
+            placeData = this.byDate(placeData, date)
+
+        if (onlyCurrent)
+            placeData = this.currentData(placeData)
 
         if (code === this.httpStatus.success_code)
             result = {

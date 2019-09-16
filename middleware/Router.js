@@ -154,12 +154,27 @@ module.exports = class Router {
             let place_id = req.body.place_id
             let token = req.body.token
             let filter = req.body.filter
+            let date = req.body.date
 
             await CitiesData.getPlacesData(filter, place_id, token, data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)
-            })
+            }, false, date)
+        })
+
+        this.app.get('/v1.1/data/get/current', async (req, res) => {
+            const citiesData = require('../business/v1_1/PlacesData')
+            let CitiesData = new citiesData()
+            let place_id = req.body.place_id
+            let token = req.body.token
+            let filter = req.body.filter
+
+            await CitiesData.getPlacesData(filter, place_id, token, data => {
+                console.log(data)
+                res.status(data.code)
+                res.json(data)
+            }, true, null)
         })
 
         this.app.post('/v1.1/data/insert', async (req, res) => {
