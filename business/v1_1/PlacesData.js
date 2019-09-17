@@ -16,6 +16,7 @@ module.exports = class PlacesData {
 
     currentData(input) {
         let result = []
+        //eatch data
         for (let i = 0; i < input.length; i++) {
             let data = input[i]
             let newData = data.times[data.times.length - 1];
@@ -29,14 +30,15 @@ module.exports = class PlacesData {
     byDate(input, date) {
         console.log(date)
         let result = []
+        // each data
         for (let i = 0; i < input.length; i++) {
             let data = input[i]
             let times = []
+            // each time
             for (let j = 0; j < data.times.length; j++) {
                 let time = data.times[j].time
                 let getDate = time.substring(0, time.indexOf(' ')).trim()
                 if (date.trim() === getDate) {
-                    //console.log(getDate)
                     times.push(data.times[j])
                 }
             }
@@ -55,21 +57,17 @@ module.exports = class PlacesData {
         if (filter == null)
             return null
         let newInput = input
+        // eatch data
         for (let i = 0; i < input.length; i++) {
-            let element = input[i]
-            //console.log(element)
-            for (let j = 0; j < element.times.length; j++) {
-                let _element = element.times[j]
-                //console.log(_element.datas)
-                for (let property in _element.datas) {
-                    //console.log(property)
+            let data = input[i]
+            // eatch time
+            for (let j = 0; j < data.times.length; j++) {
+                let time = data.times[j]
+                for (let property in time.datas) {
                     console.log(i, ', ', j)
-                    //console.log(newInput[i].times[j].datas)
                     if (property != filter)
                         delete newInput[i].times[j].datas[property]
                 }
-
-                //console.log(newInput[i].times[j].datas)
             }
         }
         return newInput
@@ -88,11 +86,9 @@ module.exports = class PlacesData {
         if (isTruth !== false) {
             if (isTruth.level === 'normal') {
                 newplaceId = isTruth.place_id
-                // console.log('place id => ', isTruth.place_id)
                 placename = await this.Places.getplaceName(newplaceId)
             } else {
                 newplaceId = place_id
-                // console.log('place id => ', isTruth.place_id)
                 placename = await this.Places.getplaceName(newplaceId)
                 if (newplaceId != null && placename === false) {
                     placename = null
@@ -103,23 +99,45 @@ module.exports = class PlacesData {
             }
             console.log('next => ', next)
             if (next) {
-                await this.db.collection('places_data').doc(newplaceId).get()
-                    .then(async snapshot => {
-                        if (snapshot.exists) {
-                            placeData.push({
-                                place_id: snapshot.data().place_id,
-                                place_name: placename,
-                                times: snapshot.data().times
-                            })
-                            code = this.httpStatus.success_code
-                            message = this.httpStatus.success_message
-                        }
-                    })
-                    .catch(err => {
-                        console.log('Error get places_data #1', err)
-                        code = this.httpStatus.bad_request_code
-                        message = this.httpStatus.bad_request_message
-                    })
+                if (!this.fs.existsSync('./cache/' + newplaceId + '.json')) {
+                    await this.db.collection('places_data').doc(newplaceId).get()
+                        .then(async snapshot => {
+                            if (snapshot.exists) {
+                                placeData.push({
+                                    place_id: snapshot.data().place_id,
+                                    place_name: placename,
+                                    times: snapshot.data().times
+                                })
+                                code = this.httpStatus.success_code
+                                message = this.httpStatus.success_message
+                            }
+                        })
+                        .catch(err => {
+                            console.log('Error get places_data #1', err)
+                            code = this.httpStatus.bad_request_code
+                            message = this.httpStatus.bad_request_message
+                        })
+                } else {
+                    // From cache
+                    let cacheJson = JSON.parse(this.fs.readFileSync('./cache/' + newplaceId + '.json', 'utf8'))
+
+                    // each data
+                    for (let i = 0; i < cacheJson.places.length; i++) {
+                        let data = cacheJson.places[i]
+                        let time = []
+                        // each time
+                        for (let j = 0; j < data.times.length; j++)
+                            time.push(data.times[j])
+
+                        placeData.push({
+                            place_id: data.place_id,
+                            place_name: data.place_name,
+                            times: time
+                        })
+                        code = this.httpStatus.success_code
+                        message = this.httpStatus.success_message
+                    }
+                }
             }
         }
 
@@ -139,7 +157,7 @@ module.exports = class PlacesData {
             result = {
                 code: code,
                 message: message,
-                datas: placeData
+                places: placeData
             }
         else
             result = {
@@ -147,7 +165,8 @@ module.exports = class PlacesData {
                 message: message,
             }
 
-        this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(result), 'utf8')
+        if (!this.fs.existsSync('./cache/' + newplaceId + '.json'))
+            this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(result), 'utf8')
 
         callback(result)
     }
@@ -188,12 +207,15 @@ module.exports = class PlacesData {
             console.log('next => ', next)
             console.log(newplaceId)
             if (next) {
+                let timeInsertId = this.random(64)
+                let timeInsert = this.todayWithHour()
                 await this.db.collection('places_data').doc(newplaceId).get()
                     .then(async snapshot => {
+                        let placeData = snapshot.data()
                         if (snapshot.exists) {
                             let timeForUpdate = {
-                                time_id: this.random(64),
-                                time: this.todayWithHour(),
+                                time_id: timeInsertId,
+                                time: timeInsert,
                                 datas: inputDatas
                             }
 
@@ -203,6 +225,25 @@ module.exports = class PlacesData {
                                 .then(() => {
                                     code = this.httpStatus.success_code
                                     message = this.httpStatus.success_message
+
+                                    if (this.fs.existsSync('./cache/' + newplaceId + '.json')) {     
+                                        let cacheForWrite = {
+                                            code: code,
+                                            message: message,
+                                            places: [
+                                                {
+                                                    place_id: newplaceId,
+                                                    place_name: placename,
+                                                    times: times
+                                                }
+                                            ]
+                                        }
+                                        
+                                        console.log(JSON.stringify(cacheForWrite))
+                                        this.fs.unlinkSync('./cache/' + newplaceId + '.json', JSON.stringify(cacheForWrite))
+                                        this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(cacheForWrite), 'utf8')
+                                    }
+
                                 })
                                 .catch(err => {
                                     code = this.httpStatus.bad_request_code
