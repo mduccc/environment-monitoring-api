@@ -110,6 +110,15 @@ module.exports = class PlacesData {
                                 })
                                 code = this.httpStatus.success_code
                                 message = this.httpStatus.success_message
+
+                                let cache = {
+                                    code: code,
+                                    message: message,
+                                    places: placeData
+                                }
+
+                                if (!this.fs.existsSync('./cache/' + newplaceId + '.json'))
+                                    this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(cache), 'utf8')
                             }
                         })
                         .catch(err => {
@@ -165,9 +174,6 @@ module.exports = class PlacesData {
                 message: message,
             }
 
-        if (!this.fs.existsSync('./cache/' + newplaceId + '.json'))
-            this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(result), 'utf8')
-
         callback(result)
     }
 
@@ -211,7 +217,6 @@ module.exports = class PlacesData {
                 let timeInsert = this.todayWithHour()
                 await this.db.collection('places_data').doc(newplaceId).get()
                     .then(async snapshot => {
-                        let placeData = snapshot.data()
                         if (snapshot.exists) {
                             let timeForUpdate = {
                                 time_id: timeInsertId,
@@ -226,8 +231,8 @@ module.exports = class PlacesData {
                                     code = this.httpStatus.success_code
                                     message = this.httpStatus.success_message
 
-                                    if (this.fs.existsSync('./cache/' + newplaceId + '.json')) {     
-                                        let cacheForWrite = {
+                                    if (this.fs.existsSync('./cache/' + newplaceId + '.json')) {
+                                        let cache = {
                                             code: code,
                                             message: message,
                                             places: [
@@ -238,10 +243,10 @@ module.exports = class PlacesData {
                                                 }
                                             ]
                                         }
-                                        
-                                        console.log(JSON.stringify(cacheForWrite))
-                                        this.fs.unlinkSync('./cache/' + newplaceId + '.json', JSON.stringify(cacheForWrite))
-                                        this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(cacheForWrite), 'utf8')
+
+                                        console.log(JSON.stringify(cache))
+                                        this.fs.unlinkSync('./cache/' + newplaceId + '.json', JSON.stringify(cache))
+                                        this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(cache), 'utf8')
                                     }
 
                                 })
