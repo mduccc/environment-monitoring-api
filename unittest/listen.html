@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<script src="/socket.io/socket.io.js"></script>
+
+<body>
+
+  <p>Message:</p><br>
+
+  <script>
+    let socket = io();
+    socket.on('notify', message => {
+      console.log(message)
+      let par = document.createElement("p")
+      par.innerHTML = message
+
+      document.getElementsByTagName('body')[0].appendChild(par)
+    })
+  </script>
+
+
+</body>
+
+</html>

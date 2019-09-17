@@ -213,11 +213,11 @@ module.exports = class Router {
                 dust: dust,
                 humidity: humidity,
             }
-            await CitiesData.insertPlacesData(datas, place_id, token, async data => {
+            await CitiesData.insertPlacesData(datas, place_id, token, async (data, emitData) => {
                 console.log(data)
 
                 if (data.code === 200)
-                    this.io.emit(token, 'Data changed')
+                    this.io.emit(token, emitData)
 
                 res.status(data.code)
                 res.json(data)

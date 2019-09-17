@@ -186,6 +186,7 @@ module.exports = class PlacesData {
         let placename = ''
         let newplaceId = ''
         let next = true
+        let emitData = null
 
         if (isTruth !== false) {
             if (isTruth.level === 'normal') {
@@ -244,6 +245,7 @@ module.exports = class PlacesData {
                                             ]
                                         }
 
+                                        emitData = cache
                                         console.log(JSON.stringify(cache))
                                         this.fs.unlinkSync('./cache/' + newplaceId + '.json', JSON.stringify(cache))
                                         this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(cache), 'utf8')
@@ -264,7 +266,7 @@ module.exports = class PlacesData {
             place_name: placename,
             message: message
         }
-        callback(result)
+        callback(result, emitData)
     }
 
 }

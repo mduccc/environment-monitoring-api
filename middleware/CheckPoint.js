@@ -19,8 +19,13 @@ module.exports = class CheckPoint {
         })
 
         this.app.get('/emit', (req, res, next) => {
-            this.io.emit('notify', 'hello')
-            res.send('emit')
+            let message = req.params.message
+            if (message !== undefined && message != null && message.trim() !== '') {
+                this.io.emit('notify', 'hello')
+                res.send('Sent message: ' + message)
+            } else {
+                res.send('No message param')
+            }
         })
 
         this.app.use('/v1/:path', async (req, res, next) => {
@@ -113,13 +118,18 @@ module.exports = class CheckPoint {
             next()
         })
 
-        this.app.get('/socket', (req, res, next) => {
-            res.sendFile(this.path.resolve('unittest/socket.io.html'))
+        this.app.get('/listen', (req, res, next) => {
+            res.sendFile(this.path.resolve('unittest/listen.html'))
         })
 
         this.app.get('/emit', (req, res, next) => {
-            this.io.emit('notify', 'hello')
-            res.send('emit')
+            let message = req.query.message
+            if (message !== undefined && message != null && message.trim() !== '') {
+                this.io.emit('notify', message)
+                res.send('Sent message: ' + message)
+            } else {
+                res.send('No message param')
+            }
         })
 
         this.app.use('/v1.1/:path', async (req, res, next) => {
