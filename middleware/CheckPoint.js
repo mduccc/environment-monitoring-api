@@ -134,7 +134,7 @@ module.exports = class CheckPoint {
                 case 'login': {
                     let username = req.body.username
                     let password = req.body.password
-                    if (username == null || password == null || username.trim() === '' || password.trim() == '')
+                    if (username == undefined || password == undefined || username == null || password == null || username.trim() === '' || password.trim() == '')
                         res.json({ message: 'invalid params' })
                     else
                         next()
@@ -142,7 +142,7 @@ module.exports = class CheckPoint {
                 }
                 case 'logout': {
                     let token = req.body.token
-                    if (token == null || token.trim() === '')
+                    if (token == null || token.trim() === '' || token == undefined)
                         res.json({ message: 'invalid params' })
                     else
                         next()
@@ -179,7 +179,7 @@ module.exports = class CheckPoint {
         this.app.use('/v1.1/data/get', (req, res, next) => {
             console.log('/v1.1/data/get')
             let token = req.body.token
-            if (token == null || token.trim() === '')
+            if (token == null || token.trim() === '' || token == undefined)
                 res.json({ message: 'invalid params' })
             else
                 next()
@@ -197,7 +197,7 @@ module.exports = class CheckPoint {
         this.app.use('/v1.1/data/insert', (req, res, next) => {
             console.log('/v1.1/data/insert')
             let token = req.body.token
-            if (token == null || token.trim() === '')
+            if (token == null || token.trim() === '' || token == undefined)
                 res.json({ message: 'invalid params' })
             else
                 next()
@@ -207,7 +207,7 @@ module.exports = class CheckPoint {
     }
 
     go() {
-        this.v1()
+        //this.v1()
         this.v1_1()
     }
 

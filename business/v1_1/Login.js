@@ -14,12 +14,12 @@ module.exports = class Login {
     async saveToken(token, accID) {
         console.log('Token created => ', token)
         let result = false
-        let tokenExists = await this.ValidateToken.isExists(token)
+        //let tokenExists = await this.ValidateToken.isExists(token)
 
-        while (await tokenExists) {
-            token = this.random(128)
-            tokenExists = await this.ValidateToken.isExists(token)
-        }
+        // while (await tokenExists) {
+        //     token = this.random(128)
+        //     tokenExists = await this.ValidateToken.isExists(token)
+        // }
 
         let json = {
             token: token,
@@ -27,7 +27,7 @@ module.exports = class Login {
             date_created: this.today()
         }
 
-        await this.db.collection('tokens').add(json)
+        await this.db.collection('tokens').doc(token.substring(0, 20)).set(json)
             .then(async () => {
                 result = true
             })
@@ -49,22 +49,14 @@ module.exports = class Login {
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
 
-        await this.db.collection('accounts').get()
+        await this.db.collection('accounts').doc(username).get()
             .then(async snapshot => {
-                //await console.log('id =>', snapshot.docs.map(doc => doc.id))
-                //await console.log('snapshot =>', snapshot.docs.map(doc => doc.data()))
-                let ids = await snapshot.docs.map(doc => doc.id)
-                let datas = await snapshot.docs.map(doc => doc.data())
-                for (let i = 0; i < datas.length; i++) {
-                    let id = ids[i]
-                    let element = datas[i]
-                    if (username === element.username && password === element.password) {
-                        let accId = id
-                        token = this.random(128)
-                        if (await this.saveToken(token, accId)) {
+                if (snapshot.exists) {
+                    if (password === snapshot.data().password) {
+                        token = this.random(32)
+                        if (await this.saveToken(token, username)) {
                             code = this.httpStatus.success_code
                             message = this.httpStatus.success_message
-                            break
                         }
                     }
                 }

@@ -11,6 +11,7 @@ module.exports = class PlacesData {
         this.Places = new this.places()
         this.random = require('./StringRandom')
         this.todayWithHour = require('./TodayWithHour')
+        this.fs = require('fs')
     }
 
     currentData(input) {
@@ -30,14 +31,20 @@ module.exports = class PlacesData {
         let result = []
         for (let i = 0; i < input.length; i++) {
             let data = input[i]
+            let times = []
             for (let j = 0; j < data.times.length; j++) {
                 let time = data.times[j].time
                 let getDate = time.substring(0, time.indexOf(' ')).trim()
                 if (date.trim() === getDate) {
                     //console.log(getDate)
-                    result.push(data.times[j])
+                    times.push(data.times[j])
                 }
             }
+            result.push({
+                place_id: data.place_id,
+                place_name: data.place_name,
+                times: times
+            })
         }
 
         return result
@@ -96,60 +103,16 @@ module.exports = class PlacesData {
             }
             console.log('next => ', next)
             if (next) {
-                await this.db.collection('places_data').get()
+                await this.db.collection('places_data').doc(newplaceId).get()
                     .then(async snapshot => {
-                        let ids = snapshot.docs.map(doc => doc.id)
-                        let datas = snapshot.docs.map(doc => doc.data())
-                        if (isTruth.level === 'normal') {
-                            for (let i = 0; i < datas.length; i++) {
-                                let id = ids[i]
-                                let data = datas[i]
-                                //console.log('place data =>', data)
-                                if (data.place_id === newplaceId) {
-                                    //console.log('place data =>', data)
-                                    placeData.push({
-                                        place_id: data.place_id,
-                                        place_name: placename,
-                                        times: data.times
-                                    })
-                                    code = this.httpStatus.success_code
-                                    message = this.httpStatus.success_message
-                                    break
-                                }
-                            }
-                        } else {
-                            if (newplaceId == null) {
-                                for (let i = 0; i < datas.length; i++) {
-                                    let id = ids[i]
-                                    let data = datas[i]
-                                    //console.log('place data =>', data)
-                                    //console.log('place data =>', data)
-                                    placeData.push({
-                                        place_id: data.place_id,
-                                        place_name: await this.Places.getplaceName(data.place_id),
-                                        times: data.times
-                                    })
-                                    code = this.httpStatus.success_code
-                                    message = this.httpStatus.success_message
-                                }
-                            } else {
-                                for (let i = 0; i < datas.length; i++) {
-                                    let id = ids[i]
-                                    let data = datas[i]
-                                    //console.log('place data =>', data)
-                                    //console.log('place data =>', data)
-                                    if (data.place_id === newplaceId) {
-                                        placeData.push({
-                                            place_id: data.place_id,
-                                            place_name: placename,
-                                            times: data.times
-                                        })
-                                        code = this.httpStatus.success_code
-                                        message = this.httpStatus.success_message
-                                        break
-                                    }
-                                }
-                            }
+                        if (snapshot.exists) {
+                            placeData.push({
+                                place_id: snapshot.data().place_id,
+                                place_name: placename,
+                                times: snapshot.data().times
+                            })
+                            code = this.httpStatus.success_code
+                            message = this.httpStatus.success_message
                         }
                     })
                     .catch(err => {
@@ -160,11 +123,13 @@ module.exports = class PlacesData {
             }
         }
 
-        let filterData = this.filterData(placeData, filter)
-        if (filterData != null)
+        let filterData = []
+        if (filterData != null && filter != undefined) {
+            let filterData = this.filterData(placeData, filter)
             placeData = filterData
+        }
 
-        if (date != null)
+        if (date != null && date != undefined)
             placeData = this.byDate(placeData, date)
 
         if (onlyCurrent)
@@ -174,13 +139,15 @@ module.exports = class PlacesData {
             result = {
                 code: code,
                 message: message,
-                data: placeData
+                datas: placeData
             }
         else
             result = {
                 code: code,
                 message: message,
             }
+
+        this.fs.writeFileSync('./cache/' + newplaceId + '.json', JSON.stringify(result), 'utf8')
 
         callback(result)
     }
@@ -219,42 +186,29 @@ module.exports = class PlacesData {
                 }
             }
             console.log('next => ', next)
+            console.log(newplaceId)
             if (next) {
-                await this.db.collection('places_data').get()
+                await this.db.collection('places_data').doc(newplaceId).get()
                     .then(async snapshot => {
-                        let ids = snapshot.docs.map(doc => doc.id)
-                        let datas = snapshot.docs.map(doc => doc.data())
-
-                        for (let i = 0; i < datas.length; i++) {
-                            let id = ids[i]
-                            let data = datas[i]
-                            if (data.place_id == newplaceId) {
-                                let timeForUpdate = {
-                                    time_id: this.random(128),
-                                    time: this.todayWithHour(),
-                                    datas: inputDatas
-                                }
-
-                                let times = data.times
-                                times.push(timeForUpdate)
-                                console.log(placename, ' place times => ', times)
-                                await this.db.collection('places_data').doc(id).update({ times: times })
-                                    .then(() => {
-                                        code = this.httpStatus.success_code
-                                        message = this.httpStatus.success_message
-                                    })
-                                    .catch(err => {
-                                        code = this.httpStatus.bad_request_code
-                                        message = this.httpStatus.bad_request_message
-                                    })
-                                break
+                        if (snapshot.exists) {
+                            let timeForUpdate = {
+                                time_id: this.random(64),
+                                time: this.todayWithHour(),
+                                datas: inputDatas
                             }
+
+                            let times = snapshot.data().times
+                            times.push(timeForUpdate)
+                            await this.db.collection('places_data').doc(newplaceId).update({ times: times })
+                                .then(() => {
+                                    code = this.httpStatus.success_code
+                                    message = this.httpStatus.success_message
+                                })
+                                .catch(err => {
+                                    code = this.httpStatus.bad_request_code
+                                    message = this.httpStatus.bad_request_message
+                                })
                         }
-                    })
-                    .catch(err => {
-                        console.log('Error get places_data #3', err)
-                        code = this.httpStatus.bad_request_code
-                        message = this.httpStatus.bad_request_message
                     })
             }
         }
@@ -264,7 +218,6 @@ module.exports = class PlacesData {
             place_name: placename,
             message: message
         }
-
         callback(result)
     }
 

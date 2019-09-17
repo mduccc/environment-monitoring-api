@@ -47,10 +47,10 @@ module.exports = class ValidateToken {
                     let id = ids[i]
                     let element = datas[i]
                     if (id === accID) {
-                        if(element.level === 'normal')
+                        if (element.level === 'normal')
                             result = {
                                 level: element.level,
-                                place_id: element.place_id   
+                                place_id: element.place_id
                             }
                         else
                             result = {
@@ -81,7 +81,7 @@ module.exports = class ValidateToken {
             console.log('Datediff => ', datediff)
             if (datediff <= 31) {
                 let accInfo = await this.getAccInfo(isExists.accID)
-                if(accInfo.level === 'normal')
+                if (accInfo.level === 'normal')
                     result = {
                         token: isExists.token,
                         accID: isExists.accID,
@@ -90,12 +90,12 @@ module.exports = class ValidateToken {
                         place_id: accInfo.place_id
                     }
                 else
-                result = {
-                    token: isExists.token,
-                    accID: isExists.accID,
-                    level: accInfo.level,
-                    date_created: isExists.date_created,
-                }
+                    result = {
+                        token: isExists.token,
+                        accID: isExists.accID,
+                        level: accInfo.level,
+                        date_created: isExists.date_created,
+                    }
             }
         }
 

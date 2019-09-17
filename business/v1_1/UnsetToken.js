@@ -10,38 +10,22 @@ module.exports = class UnsetToken {
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
         let next = true
+        let tokenId = token.substring(0, 20)
 
         if (await this.Validate.isTruth(token) == false)
             next = false
 
         if (next) {
-            await this.db.collection('tokens').get()
-                .then(async snapshot => {
-                    let ids = snapshot.docs.map(doc => doc.id)
-                    let datas = snapshot.docs.map(doc => doc.data())
-                    for (let i = 0; i < datas.length; i++) {
-                        let id = ids[i]
-                        let element = datas[i]
-
-                        //console.log('token => ', element)
-                        if (element.token === token) {
-                            await this.db.collection('tokens').doc(id).update({ date_created: '01-01-1970' })
-                                .then(() => {
-                                    code = this.httpStatus.success_code
-                                    message = this.httpStatus.success_message
-                                }).catch(err => {
-                                    {
-                                        console.log('Error unset token', err)
-                                        code = this.httpStatus.bad_request_code
-                                        message = this.httpStatus.bad_request_message
-                                    }
-                                })
-                            break
-                        }
+            await this.db.collection('tokens').doc(tokenId).update({ date_created: '01-01-1970' })
+                .then(() => {
+                    code = this.httpStatus.success_code
+                    message = this.httpStatus.success_message
+                }).catch(err => {
+                    {
+                        console.log('Error unset token', err)
+                        code = this.httpStatus.bad_request_code
+                        message = this.httpStatus.bad_request_message
                     }
-                })
-                .catch(err => {
-                    console.log('Error get token', err)
                 })
         }
 
