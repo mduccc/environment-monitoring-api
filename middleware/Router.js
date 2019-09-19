@@ -138,11 +138,11 @@ module.exports = class Router {
             })
         })
 
-        this.app.get('/v1.1/register', async (req, res) => {
+        this.app.post('/v1.1/register', async (req, res) => {
             res.send('Register')
         })
 
-        this.app.get('/v1.1/data/get', async (req, res) => {
+        this.app.post('/v1.1/data/get', async (req, res) => {
             const citiesData = require('../business/v1_1/PlacesData')
             let CitiesData = new citiesData()
             let place_id = req.body.place_id
@@ -157,7 +157,7 @@ module.exports = class Router {
             }, false, date)
         })
 
-        this.app.get('/v1.1/data/get/current', async (req, res) => {
+        this.app.post('/v1.1/data/get/current', async (req, res) => {
             const citiesData = require('../business/v1_1/PlacesData')
             let CitiesData = new citiesData()
             let place_id = req.body.place_id
