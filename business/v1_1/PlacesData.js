@@ -21,7 +21,11 @@ module.exports = class PlacesData {
             let data = input[i]
             let newData = data.times[data.times.length - 1];
 
-            result.push(newData)
+            result.push({
+                place_id: data.place_id,
+                place_name: data.place_name,
+                times: [newData]
+            })
         }
 
         return result
