@@ -115,6 +115,7 @@ module.exports = class CheckPoint {
     v1_1() {
         this.app.use(this.bodyParser.json())
         this.app.use((req, res, next) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
             next()
         })
 
