@@ -157,6 +157,24 @@ module.exports = class Router {
             }, false, date)
         })
 
+        this.app.post('/v1.1/data/get/info', async (req, res) => {
+            const validateToken = require('../business/v1_1/ValidateToken')
+            const httpStatus = require('../business/HttpStatus')
+            let ValidateToken = new validateToken()
+            let token = req.body.token
+            let valid = await ValidateToken.isTruth(token);
+
+            if (valid != false) {
+                res.status(httpStatus.success_code)
+                res.json(valid)
+            } else {
+                res.status(httpStatus.unauthorized_code)
+                res.json({
+                    message: httpStatus.unauthorized_message
+                })
+            }
+        })
+
         this.app.post('/v1.1/data/get/current', async (req, res) => {
             const citiesData = require('../business/v1_1/PlacesData')
             let CitiesData = new citiesData()
@@ -225,7 +243,7 @@ module.exports = class Router {
                 console.log(data)
 
                 if (data.code == 200)
-                    this.io.emit(token, emitData)
+                    this.io.emit(place_id, emitData)
 
                 res.status(data.code)
                 res.json(data)

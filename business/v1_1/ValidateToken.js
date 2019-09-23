@@ -39,7 +39,8 @@ module.exports = class ValidateToken {
                     if (snapshot.data().level === 'normal')
                         result = {
                             level: snapshot.data().level,
-                            place_id: snapshot.data().place_id
+                            place_id: snapshot.data().place_id,
+                            email: snapshot.data().email
                         }
                     else
                         result = {
@@ -72,6 +73,7 @@ module.exports = class ValidateToken {
                         token: isExists.token,
                         accID: isExists.accID,
                         level: accInfo.level,
+                        email: accInfo.email,
                         date_created: isExists.date_created,
                         place_id: accInfo.place_id
                     }
@@ -80,6 +82,7 @@ module.exports = class ValidateToken {
                         token: isExists.token,
                         accID: isExists.accID,
                         level: accInfo.level,
+                        email: accInfo.email,
                         date_created: isExists.date_created,
                     }
             }

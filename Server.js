@@ -5,6 +5,8 @@ class Server {
         this.http = require('http').createServer(this.app);
         this._io = require('socket.io')(this.http)
         this.port = process.env.PORT
+        this.validateToken = require('./business/v1_1/ValidateToken')
+        this.ValidateToken = new this.validateToken()
     }
 
     io() {
@@ -12,6 +14,12 @@ class Server {
     }
 
     start() {
+        this._io.use(async (socket, next) => {
+            let token = socket.handshake.query.token;
+            console.log('Token: ', token);
+            if (token != undefined && token != null && await this.ValidateToken.isTruth(token) != false)
+                next()
+        })
         this._io.on('connection', socket => {
             console.log('a user connected')
 
