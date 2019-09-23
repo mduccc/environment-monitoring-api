@@ -166,10 +166,12 @@ module.exports = class Router {
 
             if (valid != false) {
                 res.status(httpStatus.success_code)
+                valid.code = httpStatus.success_code
                 res.json(valid)
             } else {
                 res.status(httpStatus.unauthorized_code)
                 res.json({
+                    code: httpStatus.unauthorized_code,
                     message: httpStatus.unauthorized_message
                 })
             }
@@ -243,7 +245,7 @@ module.exports = class Router {
                 console.log(data)
 
                 if (data.code == 200)
-                    this.io.emit(place_id, emitData)
+                    this.io.emit(emitData.place_id, emitData)
 
                 res.status(data.code)
                 res.json(data)
