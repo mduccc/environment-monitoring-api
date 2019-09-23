@@ -114,7 +114,7 @@ module.exports = class CheckPoint {
 
     v1_1() {
         this.app.use(this.bodyParser.json())
-        this.app.use('/v1.1/login/', (req, res, next) => {
+        this.app.use((req, res, next) => {
             res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
             res.setHeader('Access-Control-Request-Method', 'POST, GET');
             res.setHeader('Access-Control-Allow-Headers', 'access-control-allow-credentials,access-control-allow-headers,access-control-allow-methods,content-type');
