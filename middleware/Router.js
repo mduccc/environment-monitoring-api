@@ -179,10 +179,12 @@ module.exports = class Router {
             let gas = req.body.gas
             let fire = req.body.fire
             let temp = req.body.temp
-            let co2 = req.body.co2
+            let co = req.body.co
             let uv = req.body.uv
             let dust = req.body.dust
             let humidity = req.body.humidity
+            let smoke = req.body.smoke
+            let soil = req.body.soil
             let token = req.body.token
             let place_id = req.body.place_id
 
@@ -194,24 +196,30 @@ module.exports = class Router {
                 fire = ''
             if (temp === undefined)
                 temp = ''
-            if (co2 === undefined)
-                co2 = ''
+            if (co === undefined)
+                co = ''
             if (uv === undefined)
                 uv = ''
             if (dust === undefined)
                 dust = ''
             if (humidity === undefined)
                 humidity = ''
+            if (smoke === undefined)
+                smoke = ''
+            if (soil === undefined)
+                soil = ''
 
             let datas = {
                 rain: rain,
                 gas: gas,
                 fire: fire,
                 temp: temp,
-                co2: co2,
+                co: co,
                 uv: uv,
                 dust: dust,
                 humidity: humidity,
+                smoke: smoke,
+                soil: soil
             }
             await CitiesData.insertPlacesData(datas, place_id, token, async (data, emitData) => {
                 console.log(data)
