@@ -242,10 +242,10 @@ module.exports = class Router {
                 soil: soil
             }
             await CitiesData.insertPlacesData(datas, place_id, token, async (data, emitData) => {
-                console.log(data)
-
+                //console.log(data)
+                console.log('place_id: ', emitData.place_id);
                 if (data.code == 200)
-                    this.io.emit(emitData.place_id, emitData)
+                    this.io.emit(emitData.places[0].place_id, emitData)
 
                 res.status(data.code)
                 res.json(data)
