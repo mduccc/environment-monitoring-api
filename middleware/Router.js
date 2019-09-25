@@ -191,6 +191,35 @@ module.exports = class Router {
             }, true, null)
         })
 
+        this.app.post('/v1.1/sensor/get', async (req, res) => {
+            let device = require('../business/v1_1/Sensor')
+            let Device = new device()
+
+            let place_id = req.body.place_id
+            let token = req.body.token
+
+            await Device.get(token, place_id, data => {
+                console.log(data)
+                res.status(data.code)
+                res.json(data)
+            })
+        })
+        this.app.post('/v1.1/sensor/switch', async (req, res) => {
+            let device = require('../business/v1_1/Sensor')
+            let Device = new device()
+
+            let place_id = req.body.place_id
+            let token = req.body.token
+            let sensor_name = req.body.sensor_name
+            let _switch = req.body.switch
+
+            await Device.switch(token, place_id, sensor_name, _switch, data => {
+                console.log(data)
+                res.status(data.code)
+                res.json(data)
+            })
+        })
+
         this.app.post('/v1.1/data/insert', async (req, res) => {
             const citiesData = require('../business/v1_1/PlacesData')
             let CitiesData = new citiesData()

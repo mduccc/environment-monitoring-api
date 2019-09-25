@@ -169,6 +169,10 @@ module.exports = class CheckPoint {
                     next()
                     break
                 }
+                case 'sensor': {
+                    next()
+                    break
+                }
                 case 'import': {
                     res.send('Importing...')
                     //const importDB = require('../business/v1.1/ImportDB')
@@ -198,14 +202,32 @@ module.exports = class CheckPoint {
                 next()
         })
 
-        // this.app.use('/v1.1/data/get/current', (req, res, next) => {
-        //     console.log('/v1.1/data/get/current')
-        //     let token = req.body.token
-        //     if (token == null || token.trim() === '')
-        //         res.json({ message: 'invalid params' })
-        //     else
-        //         next()
-        // })
+        this.app.use('/v1.1/sensor/get', (req, res, next) => {
+            console.log('/v1.1/sensor/get')
+            let token = req.body.token
+            let place_id = req.body.place_id
+            if (token == null || token.trim() === '' || token == undefined ||
+                place_id == null || place_id.trim() === '' || place_id == undefined)
+                res.json({ message: 'invalid params' })
+            else
+                next()
+        })
+
+        this.app.use('/v1.1/sensor/switch', (req, res, next) => {
+            console.log('/v1.1/sensor/switch')
+            let token = req.body.token
+            let place_id = req.body.place_id
+            let sensor_name = req.body.sensor_name
+            let _switch = req.body.switch
+
+            if (token == null || token.trim() === '' || token == undefined ||
+                place_id == null || place_id.trim() === '' || place_id == undefined ||
+                sensor_name == null || sensor_name.trim() === '' || sensor_name == undefined ||
+                _switch == null || _switch.trim() === '' || _switch == undefined)
+                res.json({ message: 'invalid params' })
+            else
+                next()
+        })
 
         this.app.use('/v1.1/data/insert', (req, res, next) => {
             console.log('/v1.1/data/insert')
