@@ -195,10 +195,9 @@ module.exports = class Router {
             let device = require('../business/v1_1/Sensor')
             let Device = new device()
 
-            let place_id = req.body.place_id
             let token = req.body.token
 
-            await Device.get(token, place_id, data => {
+            await Device.get(token, data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)
@@ -208,12 +207,11 @@ module.exports = class Router {
             let device = require('../business/v1_1/Sensor')
             let Device = new device()
 
-            let place_id = req.body.place_id
             let token = req.body.token
             let sensor_name = req.body.sensor_name
             let _switch = req.body.switch
 
-            await Device.switch(token, place_id, sensor_name, _switch, data => {
+            await Device.switch(token, sensor_name, _switch, data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)

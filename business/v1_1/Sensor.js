@@ -9,24 +9,18 @@ module.exports = class Sensor {
         this.Places = new this.places()
     }
 
-    async get(token, place_id, callback) {
+    async get(token, callback) {
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
         let result = null
-        let isTrust = await this.ValidateToken.isExists(token)
-        let place_name = await this.Places.getplaceName(place_id)
+        let isTrust = await this.ValidateToken.isTruth(token)
+        let place_id = null
         let next = true
         if (isTrust == false)
             next = false
-        if (next && place_name == false) {
-            code = this.httpStatus.not_found_code
-            message = this.httpStatus.not_found_message
-            next = false
-        }
-
 
         if (next) {
-            await this.db.collection('devices').doc(place_id).get()
+            await this.db.collection('devices').doc(isTrust.place_id).get()
                 .then(snapshot => {
                     if (snapshot.exists) {
                         code = this.httpStatus.success_code
@@ -49,20 +43,14 @@ module.exports = class Sensor {
             })
     }
 
-    async switch(token, place_id, sensor_name, _switch, callback) {
+    async switch(token, sensor_name, _switch, callback) {
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
-        let isTrust = await this.ValidateToken.isExists(token)
-        let place_name = await this.Places.getplaceName(place_id)
+        let isTrust = await this.ValidateToken.isTruth(token)
         let next = true
 
         if (isTrust == false)
             next = false
-        if (next && place_name == false) {
-            code = this.httpStatus.not_found_code
-            message = this.httpStatus.not_found_message
-            next = false
-        }
         if (next && _switch != '1' && _switch != '0') {
             code = this.httpStatus.invalid_input_code
             message = this.httpStatus.invalid_input_message
@@ -70,14 +58,14 @@ module.exports = class Sensor {
         }
 
         if (next) {
-            await this.db.collection('devices').doc(place_id).get()
+            await this.db.collection('devices').doc(isTrust.place_id).get()
                 .then(async snapshot => {
                     if (snapshot.exists) {
                         if (snapshot.data().hasOwnProperty(sensor_name) == false) {
                             code = this.httpStatus.not_found_code
                             message = this.httpStatus.not_found_message
                         } else {
-                            await this.db.collection('devices').doc(place_id).update({ [sensor_name]: _switch })
+                            await this.db.collection('devices').doc(isTrust.place_id).update({ [sensor_name]: _switch })
                                 .then(() => {
                                     code = this.httpStatus.success_code
                                     message = this.httpStatus.success_message

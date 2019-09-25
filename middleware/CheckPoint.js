@@ -205,9 +205,7 @@ module.exports = class CheckPoint {
         this.app.use('/v1.1/sensor/get', (req, res, next) => {
             console.log('/v1.1/sensor/get')
             let token = req.body.token
-            let place_id = req.body.place_id
-            if (token == null || token.trim() === '' || token == undefined ||
-                place_id == null || place_id.trim() === '' || place_id == undefined)
+            if (token == null || token.trim() === '' || token == undefined)
                 res.json({ message: 'invalid params' })
             else
                 next()
@@ -216,12 +214,10 @@ module.exports = class CheckPoint {
         this.app.use('/v1.1/sensor/switch', (req, res, next) => {
             console.log('/v1.1/sensor/switch')
             let token = req.body.token
-            let place_id = req.body.place_id
             let sensor_name = req.body.sensor_name
             let _switch = req.body.switch
 
             if (token == null || token.trim() === '' || token == undefined ||
-                place_id == null || place_id.trim() === '' || place_id == undefined ||
                 sensor_name == null || sensor_name.trim() === '' || sensor_name == undefined ||
                 _switch == null || _switch.trim() === '' || _switch == undefined)
                 res.json({ message: 'invalid params' })
