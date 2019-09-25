@@ -34,7 +34,7 @@ module.exports = class Sensor {
             callback({
                 code: code,
                 message: message,
-                devices: result
+                sensors: result
             })
         else
             callback({
