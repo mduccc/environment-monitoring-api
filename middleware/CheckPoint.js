@@ -218,7 +218,7 @@ module.exports = class CheckPoint {
             let _switch = req.body.switch
 
             if (token == null || token.trim() === '' || token == undefined ||
-                device_name == null || sensor_name.trim() === '' || device_name == undefined ||
+                device_name == null || device_name.trim() === '' || device_name == undefined ||
                 _switch == null || _switch.trim() === '' || _switch == undefined)
                 res.json({ message: 'invalid params' })
             else
