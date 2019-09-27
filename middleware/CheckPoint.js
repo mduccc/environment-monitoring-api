@@ -214,11 +214,11 @@ module.exports = class CheckPoint {
         this.app.use('/v1.1/device/switch', (req, res, next) => {
             console.log('/v1.1/device/switch')
             let token = req.body.token
-            let sensor_name = req.body.sensor_name
+            let device_name = req.body.device_name
             let _switch = req.body.switch
 
             if (token == null || token.trim() === '' || token == undefined ||
-                sensor_name == null || sensor_name.trim() === '' || sensor_name == undefined ||
+                device_name == null || sensor_name.trim() === '' || device_name == undefined ||
                 _switch == null || _switch.trim() === '' || _switch == undefined)
                 res.json({ message: 'invalid params' })
             else

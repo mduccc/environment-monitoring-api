@@ -211,10 +211,10 @@ module.exports = class Router {
             let Device = new device()
 
             let token = req.body.token
-            let sensor_name = req.body.sensor_name
+            let device_name = req.body.sensor_name
             let _switch = req.body.switch
 
-            await Device.switch(token, sensor_name, _switch, data => {
+            await Device.switch(token, device_name, _switch, data => {
                 console.log(data)
                 res.status(data.code)
                 res.json(data)
