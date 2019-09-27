@@ -161,12 +161,15 @@ module.exports = class Router {
             const validateToken = require('../business/v1_1/ValidateToken')
             const httpStatus = require('../business/HttpStatus')
             let ValidateToken = new validateToken()
+            let places = require('../business/v1_1/Place')
+            let Places = new places()
             let token = req.body.token
             let valid = await ValidateToken.isTruth(token);
 
             if (valid != false) {
                 res.status(httpStatus.success_code)
                 valid.code = httpStatus.success_code
+                valid.place_name = await Places.getplaceName(valid.place_id)
                 res.json(valid)
             } else {
                 res.status(httpStatus.unauthorized_code)
