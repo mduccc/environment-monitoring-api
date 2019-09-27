@@ -194,8 +194,8 @@ module.exports = class Router {
             }, true, null)
         })
 
-        this.app.post('/v1.1/sensor/get', async (req, res) => {
-            let device = require('../business/v1_1/Sensor')
+        this.app.post('/v1.1/device/get', async (req, res) => {
+            let device = require('../business/v1_1/Device')
             let Device = new device()
 
             let token = req.body.token
@@ -206,8 +206,8 @@ module.exports = class Router {
                 res.json(data)
             })
         })
-        this.app.post('/v1.1/sensor/switch', async (req, res) => {
-            let device = require('../business/v1_1/Sensor')
+        this.app.post('/v1.1/device/switch', async (req, res) => {
+            let device = require('../business/v1_1/Device')
             let Device = new device()
 
             let token = req.body.token

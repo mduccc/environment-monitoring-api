@@ -1,4 +1,4 @@
-module.exports = class Sensor {
+module.exports = class Device {
     constructor() {
         this.admin = require('../../FirebaseAdmin')
         this.db = new this.admin().firestoreDB()
@@ -34,7 +34,7 @@ module.exports = class Sensor {
             callback({
                 code: code,
                 message: message,
-                sensors: result
+                devices: result
             })
         else
             callback({
@@ -47,7 +47,15 @@ module.exports = class Sensor {
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
         let isTrust = await this.ValidateToken.isTruth(token)
+        let sensor_type = sensor_name.substring(0, sensor_name.indexOf('_'))
         let next = true
+        console.log('sensor_type: ' + sensor_type)
+
+        if (sensor_type != 'pump' && sensor_type != 'fan' && sensor_type != 'light' && sensor_type != 'awning') {
+            next = false
+            code = this.httpStatus.not_found_code
+            message = this.httpStatus.not_found_message
+        }
 
         if (isTrust == false)
             next = false
@@ -56,16 +64,18 @@ module.exports = class Sensor {
             message = this.httpStatus.invalid_input_message
             next = false
         }
+        console.log('next =>' + next)
 
         if (next) {
             await this.db.collection('devices').doc(isTrust.place_id).get()
                 .then(async snapshot => {
                     if (snapshot.exists) {
-                        if (snapshot.data().hasOwnProperty(sensor_name) == false) {
+                        console.log('devices: ' + snapshot.data()[sensor_type + 's'][sensor_name])
+                        if (snapshot.data().hasOwnProperty(sensor_type + 's') == false || snapshot.data()[sensor_type + 's'].hasOwnProperty(sensor_name) == false) {
                             code = this.httpStatus.not_found_code
                             message = this.httpStatus.not_found_message
                         } else {
-                            await this.db.collection('devices').doc(isTrust.place_id).update({ [sensor_name]: _switch })
+                            await this.db.collection('devices').doc(isTrust.place_id).update({ [sensor_type + 's']: { [sensor_name]: _switch } })
                                 .then(() => {
                                     code = this.httpStatus.success_code
                                     message = this.httpStatus.success_message

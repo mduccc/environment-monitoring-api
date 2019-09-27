@@ -169,7 +169,7 @@ module.exports = class CheckPoint {
                     next()
                     break
                 }
-                case 'sensor': {
+                case 'device': {
                     next()
                     break
                 }
@@ -202,8 +202,8 @@ module.exports = class CheckPoint {
                 next()
         })
 
-        this.app.use('/v1.1/sensor/get', (req, res, next) => {
-            console.log('/v1.1/sensor/get')
+        this.app.use('/v1.1/device/get', (req, res, next) => {
+            console.log('/v1.1/device/get')
             let token = req.body.token
             if (token == null || token.trim() === '' || token == undefined)
                 res.json({ message: 'invalid params' })
@@ -211,8 +211,8 @@ module.exports = class CheckPoint {
                 next()
         })
 
-        this.app.use('/v1.1/sensor/switch', (req, res, next) => {
-            console.log('/v1.1/sensor/switch')
+        this.app.use('/v1.1/device/switch', (req, res, next) => {
+            console.log('/v1.1/device/switch')
             let token = req.body.token
             let sensor_name = req.body.sensor_name
             let _switch = req.body.switch
