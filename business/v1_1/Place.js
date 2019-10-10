@@ -19,4 +19,20 @@ module.exports = class Places {
 
         return result
     }
+
+    async getplaceCoord(place_id) {
+        let result = false
+        await this.db.collection('places').doc(place_id).get()
+            .then(async snapshot => {
+                if (snapshot.exists)
+                    result = snapshot.data().coord
+            })
+            .catch(err => {
+                console.log('Error adding documents', err)
+            })
+
+        console.log('place coord => ', result)
+
+        return result
+    }
 }

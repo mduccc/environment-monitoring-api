@@ -3,6 +3,8 @@ module.exports = class ValidateToken {
         this.admin = require('../../FirebaseAdmin')
         this.db = new this.admin().firestoreDB()
         this.today = require('../v1/Today')
+        this.place = require('../v1_1/Place')
+        this.Place = new this.place()
     }
 
     async isExists(token) {
@@ -40,6 +42,7 @@ module.exports = class ValidateToken {
                         result = {
                             level: snapshot.data().level,
                             place_id: snapshot.data().place_id,
+                            place_coord: await this.Place.getplaceCoord(snapshot.data().place_id),
                             email: snapshot.data().email
                         }
                     else
@@ -75,7 +78,8 @@ module.exports = class ValidateToken {
                         level: accInfo.level,
                         email: accInfo.email,
                         date_created: isExists.date_created,
-                        place_id: accInfo.place_id
+                        place_id: accInfo.place_id,
+                        place_coord: accInfo.place_coord
                     }
                 else
                     result = {
