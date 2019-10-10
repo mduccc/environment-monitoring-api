@@ -43,15 +43,16 @@ module.exports = class Device {
             })
     }
 
-    async switch(token, sensor_name, _switch, callback) {
+    async switch(token, device_name, _switch, callback) {
         let code = this.httpStatus.unauthorized_code
         let message = this.httpStatus.unauthorized_message
         let isTrust = await this.ValidateToken.isTruth(token)
-        let sensor_type = sensor_name.substring(0, sensor_name.indexOf('_'))
+        let device_group = device_name.substring(0, device_name.indexOf('_'))
         let next = true
-        console.log('sensor_type: ' + sensor_type)
+        console.log('Device group: ' + device_group)
+        console.log('Device name: ' + device_name)
 
-        if (sensor_type != 'pump' && sensor_type != 'fan' && sensor_type != 'light' && sensor_type != 'awning') {
+        if (device_group != 'pump' && device_group != 'fan' && device_group != 'light' && device_group != 'awning') {
             next = false
             code = this.httpStatus.not_found_code
             message = this.httpStatus.not_found_message
@@ -70,12 +71,14 @@ module.exports = class Device {
             await this.db.collection('devices').doc(isTrust.place_id).get()
                 .then(async snapshot => {
                     if (snapshot.exists) {
-                        console.log('devices: ' + snapshot.data()[sensor_type + 's'][sensor_name])
-                        if (snapshot.data().hasOwnProperty(sensor_type + 's') == false || snapshot.data()[sensor_type + 's'].hasOwnProperty(sensor_name) == false) {
+                        console.log('devices: ' + snapshot.data()[device_group + 's'][device_name])
+                        if (snapshot.data().hasOwnProperty(device_group + 's') == false || snapshot.data()[device_group + 's'].hasOwnProperty(device_name) == false) {
                             code = this.httpStatus.not_found_code
                             message = this.httpStatus.not_found_message
                         } else {
-                            await this.db.collection('devices').doc(isTrust.place_id).update({ [sensor_type + 's']: { [sensor_name]: _switch } })
+                            let device_group_data = snapshot.data()[device_group + 's']
+                            device_group_data[device_name] = _switch
+                            await this.db.collection('devices').doc(isTrust.place_id).update({ [device_group + 's']: device_group_data })
                                 .then(() => {
                                     code = this.httpStatus.success_code
                                     message = this.httpStatus.success_message
